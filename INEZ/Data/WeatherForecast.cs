@@ -1,6 +1,6 @@
 using System;
 
-namespace BlazorApp1.Data
+namespace INEZ.Data
 {
     public class WeatherForecast
     {

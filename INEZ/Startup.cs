@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BlazorApp1.Data;
+using INEZ.Data;
 
-namespace BlazorApp1
+namespace INEZ
 {
     public class Startup
     {
