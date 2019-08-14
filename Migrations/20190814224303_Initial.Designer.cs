@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace INEZ.Migrations
 {
     [DbContext(typeof(InezContext))]
-    [Migration("20190814223134_initial")]
-    partial class initial
+    [Migration("20190814224303_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
