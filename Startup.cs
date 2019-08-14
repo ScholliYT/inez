@@ -45,7 +45,8 @@ namespace INEZ
                 services.AddDbContext<InezContext>(
                     options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
             }
-            
+
+            services.AddScoped<ItemsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

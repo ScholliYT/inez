@@ -1,6 +1,73 @@
 ﻿@page "/einkaufsliste"
+@using INEZ.Data
+@using INEZ.Data.Entities
+@using System.ComponentModel
+@using System.Reflection
+
+
+
+@inject ItemsService ItemsService
 <h3>Einkaufsliste</h3>
 
-@code {
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@NameDisplayValue</th>
+                <th>@DescriptionDisplayValue</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
+@code {
+    IEnumerable<Item> items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await ItemsService.GetItemsAsync();
+    }
+
+    public string NameDisplayValue
+    {
+        get
+        {
+            MemberInfo property = typeof(Item).GetProperty(nameof(Item.Name));
+            var dd = property.GetCustomAttribute(typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+            if (dd != null)
+            {
+                return dd.DisplayName;
+            }
+            return nameof(Item.Name);
+        }
+    }
+
+    // TODO: [Refactor] Get DisplayNameAttribute Value of Model's properties in a more elegant way
+    public string DescriptionDisplayValue
+    {
+        get
+        {
+            MemberInfo property = typeof(Item).GetProperty(nameof(Item.Description));
+            var dd = property.GetCustomAttribute(typeof(DisplayNameAttribute)) as DisplayNameAttribute;
+            if (dd != null)
+            {
+                return dd.DisplayName;
+            }
+            return nameof(Item.Description);
+        }
+    }
 }
