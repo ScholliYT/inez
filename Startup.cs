@@ -43,7 +43,7 @@ namespace INEZ
             else
             {
                 services.AddDbContext<InezContext>(
-                    options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TinRollDb;Trusted_Connection=True;MultipleActiveResultSets=true"));
+                    options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
             }
             
         }
