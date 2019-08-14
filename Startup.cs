@@ -1,5 +1,10 @@
+using System;
+using System.Linq;
+using INEZ.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +26,26 @@ namespace INEZ
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+
+            services.AddMvc().AddNewtonsoftJson();
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
+
+            if (Environment.GetEnvironmentVariable("APP_ENVIRONMENT") == "Production")
+            {
+                services.AddDbContext<InezContext>(
+                    options => options.UseSqlServer("Server=tcp:inezdbserver.database.windows.net,1433;Initial Catalog=inezdb;Persist Security Info=False;User ID={your_username};Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+            }
+            else
+            {
+                services.AddDbContext<InezContext>(
+                    options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TinRollDb;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            }
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
