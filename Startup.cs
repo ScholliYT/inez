@@ -37,8 +37,8 @@ namespace INEZ
 
             if (Environment.GetEnvironmentVariable("APP_ENVIRONMENT") == "Production")
             {
-                services.AddDbContext<InezContext>(
-                    options => options.UseSqlServer("Server=tcp:inezdbserver.database.windows.net,1433;Initial Catalog=inezdb;Persist Security Info=False;User ID={your_username};Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+                services.AddDbContext<InezContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("InezDbConnection")));
             }
             else
             {
