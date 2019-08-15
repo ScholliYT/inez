@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Azure.Search;
 
 namespace INEZ.Data.Entities
@@ -18,5 +19,8 @@ namespace INEZ.Data.Entities
         [StringLength(100)]
         [IsSearchable]
         public string Description { get; set; }
+
+        [ForeignKey("ItemTest")]
+        public TestModel Test { get; set; }
     }
 }

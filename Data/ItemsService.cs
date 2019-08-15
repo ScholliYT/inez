@@ -17,7 +17,9 @@ namespace INEZ.Data
 
         public async Task<IEnumerable<Item>> GetItemsAsync()
         {
-            return await _context.Items.ToListAsync();
+            return await _context.Items
+                .Include(item => item.Test)
+                .ToListAsync();
         }
 
         public async Task<Item> CreateUserAsync(Item item)

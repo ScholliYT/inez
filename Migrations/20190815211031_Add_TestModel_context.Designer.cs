@@ -4,14 +4,16 @@ using INEZ.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace INEZ.Migrations
 {
     [DbContext(typeof(InezContext))]
-    partial class InezContextModelSnapshot : ModelSnapshot
+    [Migration("20190815211031_Add_TestModel_context")]
+    partial class Add_TestModel_context
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,17 +31,17 @@ namespace INEZ.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("ItemTest")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(30)")
                         .HasMaxLength(30);
 
+                    b.Property<int?>("TestId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemTest");
+                    b.HasIndex("TestId");
 
                     b.ToTable("Items");
                 });
@@ -56,14 +58,14 @@ namespace INEZ.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestModel");
+                    b.ToTable("TestModels");
                 });
 
             modelBuilder.Entity("INEZ.Data.Entities.Item", b =>
                 {
                     b.HasOne("INEZ.Data.Entities.TestModel", "Test")
                         .WithMany()
-                        .HasForeignKey("ItemTest");
+                        .HasForeignKey("TestId");
                 });
 #pragma warning restore 612, 618
         }
