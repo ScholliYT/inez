@@ -1,5 +1,6 @@
 ﻿@page "/einkaufsliste"
 @using INEZ.Data
+@using INEZ.Classes
 @using INEZ.Data.Entities
 @using System.ComponentModel
 @using System.Reflection
@@ -11,7 +12,7 @@
 
 @if (items == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Lade...</em></p>
 }
 else
 {
@@ -20,15 +21,18 @@ else
             <tr>
                 <th>@NameDisplayValue</th>
                 <th>@DescriptionDisplayValue</th>
+                <th>@TestDisplayValue</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in items)
             {
-                <tr>
-                    <td>@item.Name</td>
-                    <td>@item.Description</td>
-                </tr>
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                @*TODO: fix crash if item.Test.TestProp is null*@
+                <td>@item.Test.TestProp</td>
+            </tr>
             }
         </tbody>
     </table>
@@ -46,28 +50,23 @@ else
     {
         get
         {
-            MemberInfo property = typeof(Item).GetProperty(nameof(Item.Name));
-            var dd = property.GetCustomAttribute(typeof(DisplayNameAttribute)) as DisplayNameAttribute;
-            if (dd != null)
-            {
-                return dd.DisplayName;
-            }
-            return nameof(Item.Name);
+            return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
         }
     }
 
-    // TODO: [Refactor] Get DisplayNameAttribute Value of Model's properties in a more elegant way
+    public string TestDisplayValue
+    {
+        get
+        {
+            return DisplayHelper.GetDisplayName<Item>(i => i.Test.TestProp) ?? nameof(Item.Test.TestProp);
+        }
+    }
+
     public string DescriptionDisplayValue
     {
         get
         {
-            MemberInfo property = typeof(Item).GetProperty(nameof(Item.Description));
-            var dd = property.GetCustomAttribute(typeof(DisplayNameAttribute)) as DisplayNameAttribute;
-            if (dd != null)
-            {
-                return dd.DisplayName;
-            }
-            return nameof(Item.Description);
+            return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
         }
     }
 }
