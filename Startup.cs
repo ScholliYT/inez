@@ -45,8 +45,7 @@ namespace INEZ
                 services.AddDbContext<InezContext>(
                     options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
             }
-            
-            services.BuildServiceProvider().GetService<InezContext>().Database.Migrate();
+
 
             services.AddScoped<ItemsService>();
         }
@@ -54,6 +53,10 @@ namespace INEZ
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Automatically perform database migration
+            UpdateDatabase(app);
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -75,6 +78,17 @@ namespace INEZ
                 endpoints.MapBlazorHub<App>(selector: "app");
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<InezContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }
