@@ -45,6 +45,11 @@ namespace INEZ
                 services.AddDbContext<InezContext>(
                     options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
             }
+            
+            using(var context = new InezContext()) 
+            {
+                context.Database.Migrate();
+            }
 
             services.AddScoped<ItemsService>();
         }
