@@ -21,7 +21,6 @@ else
             <tr>
                 <th>@NameDisplayValue</th>
                 <th>@DescriptionDisplayValue</th>
-                <th>@TestDisplayValue</th>
             </tr>
         </thead>
         <tbody>
@@ -30,8 +29,6 @@ else
             <tr>
                 <td>@item.Name</td>
                 <td>@item.Description</td>
-                @*TODO: fix crash if item.Test.TestProp is null*@
-                <td>@item.Test.TestProp</td>
             </tr>
             }
         </tbody>
@@ -51,14 +48,6 @@ else
         get
         {
             return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
-        }
-    }
-
-    public string TestDisplayValue
-    {
-        get
-        {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Test.TestProp) ?? nameof(Item.Test.TestProp);
         }
     }
 

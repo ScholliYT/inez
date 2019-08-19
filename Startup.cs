@@ -54,7 +54,7 @@ namespace INEZ
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Automatically perform database migration
-            UpdateDatabase(app);
+            MigrateDatabase(app);
 
 
             if (env.IsDevelopment())
@@ -80,7 +80,7 @@ namespace INEZ
             });
         }
 
-        private static void UpdateDatabase(IApplicationBuilder app)
+        private static void MigrateDatabase(IApplicationBuilder app)
         {
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
