@@ -6,41 +6,56 @@
 @using System.Reflection
 
 
-
 @inject ItemsService ItemsService
 <h3>Einkaufsliste</h3>
 
-@if (items == null)
+@if (Items == null)
 {
     <p><em>Lade...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>@NameDisplayValue</th>
-                <th>@DescriptionDisplayValue</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in items)
-            {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-            </tr>
-            }
-        </tbody>
-    </table>
+    <div class="container">
+        <div class="row" style="margin-bottom: 10px">
+            <div class="col-md-3">
+                <button class="btn btn-primary" type="button" @onclick=AddNew>Hinzufügen</button>
+            </div>
+            <div class="col-md-9">
+                <input type="text" @bind-value="this.SearchTerm" @bind-value:event="oninput" />
+                <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen</button>
+                <button class="btn btn-outline-danger" type="button" @onclick="ClearClick">Zurücksetzen</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@NameDisplayValue</th>
+                            <th>@DescriptionDisplayValue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Items)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
-    IEnumerable<Item> items;
+    IEnumerable<Item> Items;
 
     protected override async Task OnInitializedAsync()
     {
-        items = await ItemsService.GetItemsAsync();
+        await LoadItems();
     }
 
     public string NameDisplayValue
@@ -57,5 +72,55 @@ else
         {
             return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
         }
+    }
+
+
+    private string _searchTerm = "";
+    [Parameter]
+    public string SearchTerm
+    {
+        get { return _searchTerm; }
+        set
+        {
+            _searchTerm = value;
+            SearchClick();
+        }
+    }
+
+
+
+    private async Task LoadItems()
+    {
+        Items = await ItemsService.GetItemsAsync();
+        StateHasChanged();
+    }
+
+    protected void AddNew()
+    {
+        // TODO: implement
+        throw new NotImplementedException();
+    }
+
+    protected void SearchClick()
+    {
+        if (string.IsNullOrEmpty(SearchTerm))
+        {
+            LoadItems();
+            return;
+        }
+
+        Search(SearchTerm);
+    }
+
+    private async void Search(string term)
+    {
+        Items = await ItemsService.SearchItemsAsync(term);
+        StateHasChanged();
+    }
+
+    protected void ClearClick()
+    {
+        SearchTerm = "";
+        SearchClick();
     }
 }

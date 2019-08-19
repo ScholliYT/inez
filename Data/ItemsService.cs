@@ -20,7 +20,12 @@ namespace INEZ.Data
             return await _context.Items.ToListAsync();
         }
 
-        public async Task<Item> CreateUserAsync(Item item)
+        public async Task<IEnumerable<Item>> SearchItemsAsync(string searchterm)
+        {
+            return await _context.Items.Where(i => i.Name.Contains(searchterm) || i.Description.Contains(searchterm)).ToListAsync();
+        }
+
+        public async Task<Item> CreateItemAsync(Item item)
         {
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
