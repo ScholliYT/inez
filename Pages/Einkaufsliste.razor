@@ -38,6 +38,7 @@ else
                         <tr>
                             <th>@NameDisplayValue</th>
                             <th>@DescriptionDisplayValue</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,6 +47,10 @@ else
                             <tr>
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
+                                <td>
+                                    <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
+                                    <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item.Id, item.Name))>x</button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -55,13 +60,45 @@ else
     </div>
 }
 
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm delete</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <input type="hidden" id="bookToDeleteField" @bind-value=@DeleteId />
+                Are you sure you want to delete book <span id="bookTitleField"></span>?
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick=DelteItem>Delete</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 @code {
         IEnumerable<Item> Items;
 
-        protected override async Task OnInitializedAsync()
-        {
-            await LoadItems();
-        }
+    protected Guid DeleteId { get; set; } = default;
+
+    [Inject]
+    protected IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
 
         public string NameDisplayValue
         {
@@ -127,4 +164,24 @@ else
         SearchTerm = "";
         await SearchClick();
     }
+
+    protected void EditItem(Guid Id)
+    {
+        UriHelper.NavigateTo("/edititem/" + Id.ToString());
+    }
+
+    protected async void ConfirmDelete(Guid Id, string name)
+    {
+        DeleteId = Id;
+
+        await JSRuntime.InvokeAsync<bool>("blazorDemoInterop.confirmDelete", name);
+    }
+
+    protected async Task DelteItem()
+        {
+            await JSRuntime.InvokeAsync<bool>("blazorDemoInterop.hideDeleteDialog");
+
+            await ItemsService.DeleteItem(DeleteId);
+            await LoadItems();
+        }
 }
