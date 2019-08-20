@@ -88,7 +88,7 @@ else
         set
         {
             _searchTerm = value;
-            SearchClick();
+            Task.Run(async () => await SearchClick());
         }
     }
 
@@ -103,18 +103,21 @@ else
         UriHelper.NavigateTo("/edititem");
     }
 
-    protected void SearchClick()
+    protected async Task SearchClick()
     {
         if (string.IsNullOrEmpty(SearchTerm))
         {
-            Task.Run(async () => await LoadItems());
-            return;
+                await Task.Run(async () =>
+                {
+                    await LoadItems();
+                    return;
+                });
         }
 
-        Search(SearchTerm);
+        await Search(SearchTerm);
     }
 
-    private async void Search(string term)
+    private async Task Search(string term)
     {
         Items = await ItemsService.SearchItemsAsync(term);
         StateHasChanged();
@@ -123,6 +126,6 @@ else
     protected void ClearClick()
     {
         SearchTerm = "";
-        SearchClick();
+        Task.Run(async () => await SearchClick());
     }
 }
