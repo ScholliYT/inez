@@ -1,0 +1,50 @@
+﻿@using Blazored.Modal.Services
+@using INEZ.Data.Entities
+@inject IModalService ModalService
+
+
+<div class="modal-dialog">
+    <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Löschen Bestätigen</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            Möchtest du diesen Eintrag wirklich löschen?
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+            <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+            <button @onclick="Confirm" class="btn btn-danger">Bestätigen</button>
+        </div>
+
+    </div>
+</div>
+
+
+
+@code {
+    [CascadingParameter] ModalParameters Parameters { get; set; }
+
+    public Item Item { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Item = Parameters.Get<Item>("Item");
+    }
+
+    void Confirm()
+    {
+        ModalService.Close(ModalResult.Ok<Item>(Item));
+    }
+
+    void Cancel()
+    {
+        ModalService.Close(ModalResult.Cancel());
+    }
+}

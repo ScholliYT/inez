@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Blazored.Modal;
 using INEZ.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,7 +39,7 @@ namespace INEZ
                     options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
             }
 
-
+            services.AddBlazoredModal();
             services.AddScoped<ItemsService>();
         }
 

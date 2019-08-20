@@ -49,7 +49,7 @@ else
                                 <td>@item.Description</td>
                                 <td>
                                     <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
-                                    <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item.Id, item.Name))>x</button>
+                                    <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
                                 </td>
                             </tr>
                         }
@@ -60,82 +60,56 @@ else
     </div>
 }
 
-
-<div class="modal" id="myModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Confirm delete</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-                <input type="hidden" id="bookToDeleteField" @bind-value=@DeleteId />
-                Are you sure you want to delete book <span id="bookTitleField"></span>?
-            </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" @onclick=DelteItem>Delete</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
 @code {
-        IEnumerable<Item> Items;
-
-    protected Guid DeleteId { get; set; } = default;
+    IEnumerable<Item> Items;
 
     [Inject]
     protected IJSRuntime JSRuntime { get; set; }
+
+    [Inject]
+    protected IModalService Modal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadItems();
     }
 
-        public string NameDisplayValue
+    public string NameDisplayValue
+    {
+        get
         {
-            get
-            {
-                return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
-            }
+            return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
         }
+    }
 
-        public string DescriptionDisplayValue
+    public string DescriptionDisplayValue
+    {
+        get
         {
-            get
-            {
-                return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
-            }
+            return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
         }
+    }
 
 
-        private string _searchTerm = "";
-        [Parameter]
-        public string SearchTerm
+    private string _searchTerm = "";
+    [Parameter]
+    public string SearchTerm
+    {
+        get { return _searchTerm; }
+        set
         {
-            get { return _searchTerm; }
-            set
-            {
-                _searchTerm = value;
-                SearchClick();
-            }
+            _searchTerm = value;
+            SearchClick();
         }
+    }
 
 
 
-        private async Task LoadItems()
-        {
-            Items = await ItemsService.GetItemsAsync();
-            StateHasChanged();
-        }
+    private async Task LoadItems()
+    {
+        Items = await ItemsService.GetItemsAsync();
+        StateHasChanged();
+    }
 
     protected void AddNew()
     {
@@ -170,18 +144,23 @@ else
         UriHelper.NavigateTo("/edititem/" + Id.ToString());
     }
 
-    protected async void ConfirmDelete(Guid Id, string name)
+    protected void ConfirmDelete(Item item)
     {
-        DeleteId = Id;
+        var parameters = new ModalParameters();
 
-        await JSRuntime.InvokeAsync<bool>("blazorDemoInterop.confirmDelete", name);
+        parameters.Add("Item", item);
+
+        Modal.OnClose += DelteConfirmModalClosed;
+        Modal.Show("Löschen bestätigen", typeof(ConfirmDeleteDialog), parameters);
     }
 
-    protected async Task DelteItem()
+    protected async void DelteConfirmModalClosed(ModalResult result)
+    {
+        Modal.OnClose -= DelteConfirmModalClosed;
+        if (!result.Cancelled)
         {
-            await JSRuntime.InvokeAsync<bool>("blazorDemoInterop.hideDeleteDialog");
-
-            await ItemsService.DeleteItem(DeleteId);
+            await ItemsService.DeleteItem((Item)result.Data);
             await LoadItems();
         }
+    }
 }

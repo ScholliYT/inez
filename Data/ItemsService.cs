@@ -37,14 +37,10 @@ namespace INEZ.Data
             return item;
         }
 
-        public async Task DeleteItem(Guid Id)
+        public async Task DeleteItem(Item item)
         {
-            Item item = await GetItemAsync(Id);
-            if (item != null)
-            {
-                _context.Items.Remove(item);
-                await _context.SaveChangesAsync();
-            }
+            _context.Items.Remove(item);
+            await _context.SaveChangesAsync();
         }
 
         public async Task SaveChangesAsync()
