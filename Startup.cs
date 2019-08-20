@@ -27,14 +27,6 @@ namespace INEZ
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-
-            services.AddMvc().AddNewtonsoftJson();
-            services.AddResponseCompression(opts =>
-            {
-                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-                    new[] { "application/octet-stream" });
-            });
-
             if (Environment.GetEnvironmentVariable("APP_ENVIRONMENT") == "Production")
             {
                 services.AddDbContext<InezContext>(options =>
