@@ -15,32 +15,51 @@ namespace INEZ.Pages
         protected ItemsService ItemsService { get; set; }
 
         [Parameter]
-        protected Guid? Id { get; private set; } = null;
-        protected string PageTitle { get; private set; }
+        protected string Id { get; private set; } = null;
+        protected string PageTitle
+        {
+            get
+            {
+                if (creationMode)
+                {
+                    return "Eintrag hinzufügen";
+                }
+                else
+                {
+                    return "Eintrag bearbeiten";
+                }
+            }
+        }
         protected Item Item { get; private set; }
 
+        private bool creationMode;
 
 
         protected override async Task OnParametersSetAsync()
         {
-            if (!Id.HasValue || Id.Value == default)
+            if (string.IsNullOrEmpty(Id))
             {
-                PageTitle = "Eintrag hinzufügen";
                 Item = new Item();
+                creationMode = true;
             }
             else
             {
-                PageTitle = "Eintrag bearbeiten";
-
-                Item = await ItemsService.GetItemAsync(Id.Value);
+                creationMode = false;
+                Item = await ItemsService.GetItemAsync(Guid.Parse(Id));
             }
         }
 
         protected async Task Save()
         {
-            // TODO: Create or update
-            await ItemsService.CreateItemAsync(Item);
-            UriHelper.NavigateTo("/");
+            if (creationMode)
+            {
+                await ItemsService.CreateItemAsync(Item);
+            }
+            else
+            {
+                await ItemsService.SaveChangesAsync();
+            }
+            UriHelper.NavigateTo("/einkaufsliste");
         }
     }
 }
