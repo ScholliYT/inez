@@ -16,15 +16,12 @@ else
 {
     <div class="container">
         <div class="row" style="margin-bottom: 10px">
-            <div class="col-md-3">
-                <button class="btn btn-primary" type="button" @onclick=AddNew>Hinzufügen</button>
-            </div>
-            <div class="col-md-9">
-                <form class="float-right form-inline">
-                    <div class="input-group mb-3">
+            <div class="col">
+                <form class="form-row">
+                    <div class="input-group mb-auto">
                         <input type="search" class="form-control" @bind-value="this.SearchTerm" @bind-value:event="oninput" />
                         <div class="input-group-append">
-                            <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen</button>
+                            <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen/Hinzufügen</button>
                             <button class="btn btn-outline-danger" type="button" @onclick="ClearClick">Zurücksetzen</button>
                         </div>
                     </div>
@@ -98,6 +95,12 @@ else
         get { return _searchTerm; }
         set
         {
+            get { return _searchTerm; }
+            set
+            {
+                _searchTerm = value;
+                SearchClick().ConfigureAwait(false);
+            }
             _searchTerm = value;
             SearchClick();
         }
