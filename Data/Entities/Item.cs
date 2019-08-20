@@ -7,6 +7,10 @@ namespace INEZ.Data.Entities
 {
     public class Item
     {
+        public Item()
+        {
+            Id = Guid.NewGuid();
+        }
         [Key]
         public Guid Id { get; set; }
         [Required]
