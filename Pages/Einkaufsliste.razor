@@ -56,49 +56,51 @@ else
 }
 
 @code {
-    IEnumerable<Item> Items;
+        IEnumerable<Item> Items;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadItems();
-    }
-
-    public string NameDisplayValue
-    {
-        get
+        protected override async Task OnInitializedAsync()
         {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+            await LoadItems();
         }
-    }
 
-    public string DescriptionDisplayValue
-    {
-        get
+        public string NameDisplayValue
         {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
+            get
+            {
+                return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+            }
         }
-    }
 
-
-    private string _searchTerm = "";
-    [Parameter]
-    public string SearchTerm
-    {
-        get { return _searchTerm; }
-        set
+        public string DescriptionDisplayValue
         {
-            _searchTerm = value;
-            Task.Run(async () => await SearchClick());
+            get
+            {
+                return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
+            }
         }
-    }
 
-    private async Task LoadItems()
-    {
-        Items = await ItemsService.GetItemsAsync();
-        StateHasChanged();
-    }
 
-    private void AddNew()
+        private string _searchTerm = "";
+        [Parameter]
+        public string SearchTerm
+        {
+            get { return _searchTerm; }
+            set
+            {
+                _searchTerm = value;
+                SearchClick();
+            }
+        }
+
+
+
+        private async Task LoadItems()
+        {
+            Items = await ItemsService.GetItemsAsync();
+            StateHasChanged();
+        }
+
+    protected void AddNew()
     {
         UriHelper.NavigateTo("/edititem");
     }
@@ -107,11 +109,8 @@ else
     {
         if (string.IsNullOrEmpty(SearchTerm))
         {
-                await Task.Run(async () =>
-                {
-                    await LoadItems();
-                    return;
-                });
+            await LoadItems();
+            return;
         }
 
         await Search(SearchTerm);
@@ -123,9 +122,9 @@ else
         StateHasChanged();
     }
 
-    protected void ClearClick()
+    protected async Task ClearClick()
     {
         SearchTerm = "";
-        Task.Run(async () => await SearchClick());
+        await SearchClick();
     }
 }
