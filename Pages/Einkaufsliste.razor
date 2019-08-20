@@ -95,14 +95,8 @@ else
         get { return _searchTerm; }
         set
         {
-            get { return _searchTerm; }
-            set
-            {
-                _searchTerm = value;
-                SearchClick().ConfigureAwait(false);
-            }
             _searchTerm = value;
-            SearchClick();
+            SearchClick().ConfigureAwait(false);
         }
     }
 
