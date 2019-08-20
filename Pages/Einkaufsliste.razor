@@ -1,12 +1,11 @@
-﻿@page "/einkaufsliste"
+@page "/einkaufsliste"
 @using INEZ.Data
 @using INEZ.Classes
 @using INEZ.Data.Entities
-@using System.ComponentModel
-@using System.Reflection
 
 
 @inject ItemsService ItemsService
+@inject IUriHelper UriHelper
 <h3>Einkaufsliste</h3>
 
 @if (Items == null)
@@ -93,18 +92,15 @@ else
         }
     }
 
-
-
     private async Task LoadItems()
     {
         Items = await ItemsService.GetItemsAsync();
         StateHasChanged();
     }
 
-    protected void AddNew()
+    private void AddNew()
     {
-        // TODO: implement
-        throw new NotImplementedException();
+        UriHelper.NavigateTo("/edititem");
     }
 
     protected void SearchClick()

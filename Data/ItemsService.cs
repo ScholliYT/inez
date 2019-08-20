@@ -20,6 +20,11 @@ namespace INEZ.Data
             return await _context.Items.ToListAsync();
         }
 
+        public async Task<Item> GetItemAsync(Guid id)
+        {
+            return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
         public async Task<IEnumerable<Item>> SearchItemsAsync(string searchterm)
         {
             return await _context.Items.Where(i => i.Name.Contains(searchterm) || i.Description.Contains(searchterm)).ToListAsync();
