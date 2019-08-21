@@ -51,8 +51,8 @@ else
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
                                 <td>
-                                    <button type="button" class="btn btn-light" @onclick=EditItem(item.Id)>...</button>
-                                    <button type="button" class="btn btn-danger" @onclick=ConfirmDelete(item)>x</button>
+                                    <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
+                                    <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
                                 </td>
                             </tr>
                         }
