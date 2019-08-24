@@ -2,31 +2,9 @@
 @using INEZ.Data.Entities
 @inject IModalService ModalService
 
-
-<div class="modal-dialog">
-    <div class="modal-content">
-
-        <!-- Modal Header -->
-        <div class="modal-header">
-            <h4 class="modal-title">Löschen Bestätigen</h4>
-            <button type="button" class="close" @onclick="Cancel">&times;</button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-            Möchtest du diesen Eintrag wirklich löschen?
-        </div>
-
-        <!-- Modal footer -->
-        <div class="modal-footer">
-            <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
-            <button @onclick="Confirm" class="btn btn-danger">Bestätigen</button>
-        </div>
-
-    </div>
-</div>
-
-
+<p>Möchtest du "@Item.Name" wirklich löschen?</p>
+<button @onclick="Cancel" class="btn btn-secondary">Abbrechen</button>
+<button @onclick="Confirm" class="btn btn-danger">Bestätigen</button>
 
 @code {
     [CascadingParameter] ModalParameters Parameters { get; set; }
