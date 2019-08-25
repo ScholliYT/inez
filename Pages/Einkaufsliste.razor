@@ -39,7 +39,6 @@ else
                         <tr>
                             <th>@QuantitiyColumnName</th>
                             <th>@NameColumnName</th>
-                            <th>@DescriptionColumnName</th>
                             <th></th> @*for buttons*@
                         </tr>
                     </thead>
@@ -47,9 +46,8 @@ else
                         @foreach (var item in _items)
                         {
                             <tr>
-                                <td>@item.BaseQuantity.DisplayValue</td>
+                                <td>@item.Quantity</td>
                                 <td>@item.Name</td>
-                                <td>@item.Description</td>
                                 <td>
                                     <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
                                     <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
@@ -81,7 +79,7 @@ else
     {
         get
         {
-            return DisplayHelper.GetDisplayName<Quantity>(q => q.DisplayValue) ?? nameof(Quantity.DisplayValue);
+            return DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
         }
     }
 
@@ -92,15 +90,6 @@ else
             return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
         }
     }
-
-    public string DescriptionColumnName
-    {
-        get
-        {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
-        }
-    }
-
 
     private string _searchTerm = "";
     [Parameter]

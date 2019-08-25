@@ -25,27 +25,27 @@ else
             </div>
         </div>
         <div class="form-group row mb-1">
-            <label class="col-sm-3 col-form-label" for="Description">Beschreibung:</label>
+            <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
 
             <div class="col-sm-9">
-                <InputText Class="form-control" @bind-Value="@Item.Description" />
-                <ValidationMessage For="@(() => Item.Description)" />
+                <InputText Class="form-control" @bind-Value="@Item.GenericName" />
+                <ValidationMessage For="@(() => Item.GenericName)" />
             </div>
         </div>
         <div class="form-group row mb-1">
             <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
 
             <div class="col-sm-9">
-                <InputNumber Class="form-control" @bind-Value="@Item.BaseQuantity.Count" />
-                <ValidationMessage For="@(() => Item.BaseQuantity.Count)" />
+                <InputText Class="form-control" @bind-Value="@Item.Quantity" />
+                <ValidationMessage For="@(() => Item.Quantity)" />
             </div>
         </div>
         <div class="form-group row mb-1">
-            <label class="col-sm-3 col-form-label" for="Unit">Einheit:</label>
+            <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
 
             <div class="col-sm-9">
-                <InputText Class="form-control" @bind-Value="@Item.BaseQuantity.Unit" />
-                <ValidationMessage For="@(() => Item.BaseQuantity.Unit)" />
+                <InputText Class="form-control" @bind-Value="@Item.Brands" />
+                <ValidationMessage For="@(() => Item.Brands)" />
             </div>
         </div>
 

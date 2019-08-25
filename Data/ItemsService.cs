@@ -19,21 +19,18 @@ namespace INEZ.Data
         public async Task<IEnumerable<Item>> GetItemsAsync()
         {
             return await _context.Items
-                .Include(i => i.BaseQuantity)
                 .ToListAsync();
         }
 
         public async Task<Item> GetItemAsync(Guid id)
         {
             return await _context.Items
-                .Include(i => i.BaseQuantity)
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<IEnumerable<Item>> SearchItemsAsync(string searchterm)
         {
-            return await _context.Items.Where(i => i.Name.Contains(searchterm) || i.Description.Contains(searchterm))
-                .Include(i => i.BaseQuantity)
+            return await _context.Items.Where(i => i.Name.Contains(searchterm))
                 .ToListAsync();
         }
 
