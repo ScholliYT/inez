@@ -26,22 +26,29 @@ namespace INEZ
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
             if (Environment.GetEnvironmentVariable("APP_ENVIRONMENT") == "Production")
+            {
                 services.AddDbContext<InezContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("InezDbConnection")));
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("InezUserDbConnection")));
+            }
             else
-                services.AddDbContext<InezContext>(
-                    options => options.UseSqlServer(
-                        "Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            {
+                services.AddDbContext<InezContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultInezDbConnection")));
+               
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultInezUserDbConnection")));
+            }
 
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddScoped<AuthenticationStateProvider, RevalidatingAuthenticationStateProvider<IdentityUser>>();
             services.AddBlazoredModal();
             services.AddScoped<ItemsService>();
@@ -50,6 +57,9 @@ namespace INEZ
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Automatically perform database migration
+            MigrateDatabase(app);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,6 +86,22 @@ namespace INEZ
                 endpoints.MapBlazorHub<App>(selector: "app");
                 endpoints.MapFallbackToPage("/_Host");
             });
+        }
+
+        private static void MigrateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<InezContext>())
+                {
+                    context.Database.Migrate();
+                }
+
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
     }
 }
