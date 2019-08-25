@@ -1,37 +1,54 @@
 ﻿@page "/edititem"
 @page "/edititem/{Id}"
-@inherits INEZ.Pages.EditItemModel
+@inherits EditItemModel
 
 <h3>@PageTitle</h3>
 
 @if (Item == null)
 {
-    <p><em>Loading...</em></p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
 else
 {
-    <div class="row">
-        <div class="col-md-9">
-            <form class="form form-horizontal">
-                <div class="form-group">
-                    <label class="col-md-2 control-label">Name:</label>
-                    <div class="col-md-7">
-                        <input type="text" @bind-value=@Item.Name class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label">Beschreibung:</label>
-                    <div class="col-md-7">
-                        <input type="text" @bind-value=@Item.Description class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label"></label>
-                    <div class="col-md-7">
-                        <button class="btn btn-primary" type="button" @onclick=Save>Speichern</button>
-                    </div>
-                </div>
-            </form>
+    <EditForm Model="@Item" OnValidSubmit="@Save">
+        <DataAnnotationsValidator />
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="form-group row mb-1">
+            <label class="col-sm-3 col-form-label" for="Name">Name:</label>
+
+            <div class="col-sm-9">
+                <InputText Class="form-control" @bind-Value="@Item.Name" />
+                <ValidationMessage For="@(() => Item.Name)" />
+            </div>
         </div>
-    </div>
+        <div class="form-group row mb-1">
+            <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
+
+            <div class="col-sm-9">
+                <InputText Class="form-control" @bind-Value="@Item.GenericName" />
+                <ValidationMessage For="@(() => Item.GenericName)" />
+            </div>
+        </div>
+        <div class="form-group row mb-1">
+            <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
+
+            <div class="col-sm-9">
+                <InputText Class="form-control" @bind-Value="@Item.Quantity" />
+                <ValidationMessage For="@(() => Item.Quantity)" />
+            </div>
+        </div>
+        <div class="form-group row mb-1">
+            <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
+
+            <div class="col-sm-9">
+                <InputText Class="form-control" @bind-Value="@Item.Brands" />
+                <ValidationMessage For="@(() => Item.Brands)" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Speichern</button>
+    </EditForm>
 }

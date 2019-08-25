@@ -2,13 +2,14 @@
 @using INEZ.Data
 @using INEZ.Classes
 @using INEZ.Data.Entities
+@using Microsoft.AspNetCore.Components
 
 
 @inject ItemsService ItemsService
 @inject IUriHelper UriHelper
 <h3>Einkaufsliste</h3>
 
-@if (Items == null)
+@if (_items == null)
 {
     <p><em>Lade...</em></p>
 }
@@ -36,17 +37,17 @@ else
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>@NameDisplayValue</th>
-                            <th>@DescriptionDisplayValue</th>
-                            <th></th>
+                            <th>@QuantitiyColumnName</th>
+                            <th>@NameColumnName</th>
+                            <th></th> @*for buttons*@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Items)
+                        @foreach (var item in _items)
                         {
                             <tr>
+                                <td>@item.Quantity</td>
                                 <td>@item.Name</td>
-                                <td>@item.Description</td>
                                 <td>
                                     <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
                                     <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
@@ -61,10 +62,10 @@ else
 }
 
 @code {
-    IEnumerable<Item> Items;
+    IEnumerable<Item> _items;
 
     [Inject]
-    protected IJSRuntime JSRuntime { get; set; }
+    protected IJSRuntime JsRuntime { get; set; }
 
     [Inject]
     protected IModalService Modal { get; set; }
@@ -74,22 +75,21 @@ else
         await LoadItems();
     }
 
-    public string NameDisplayValue
+    public string QuantitiyColumnName
+    {
+        get
+        {
+            return DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
+        }
+    }
+
+    public string NameColumnName
     {
         get
         {
             return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
         }
     }
-
-    public string DescriptionDisplayValue
-    {
-        get
-        {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Description) ?? nameof(Item.Description);
-        }
-    }
-
 
     private string _searchTerm = "";
     [Parameter]
@@ -107,7 +107,7 @@ else
 
     private async Task LoadItems()
     {
-        Items = await ItemsService.GetItemsAsync();
+        _items = await ItemsService.GetItemsAsync();
         StateHasChanged();
     }
 
@@ -129,7 +129,7 @@ else
 
     private async Task Search(string term)
     {
-        Items = await ItemsService.SearchItemsAsync(term);
+        _items = await ItemsService.SearchItemsAsync(term);
         StateHasChanged();
     }
 
@@ -139,9 +139,9 @@ else
         await SearchClick();
     }
 
-    protected void EditItem(Guid Id)
+    protected void EditItem(Guid id)
     {
-        UriHelper.NavigateTo("/edititem/" + Id.ToString());
+        UriHelper.NavigateTo("/edititem/" + id.ToString());
     }
 
     protected void ConfirmDelete(Item item)

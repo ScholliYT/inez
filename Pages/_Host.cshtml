@@ -5,20 +5,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>INEZ</title>
-    <base href="~/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link href="css/site.css" rel="stylesheet" />
-    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
+    <base href="~/"/>
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
+    <link href="css/site.css" rel="stylesheet"/>
+    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet"/>
 </head>
 <body>
-    <app>
-        @* Remove the following line of code to disable prerendering *@
-        @(await Html.RenderStaticComponentAsync<App>())
-    </app>
+<app>
+    @* Remove the following line of code to disable prerendering *@
+    @(await Html.RenderStaticComponentAsync<App>())
+</app>
 
-    <script src="_framework/blazor.server.js"></script>
+<script src="_framework/blazor.server.js"></script>
 </body>
 </html>

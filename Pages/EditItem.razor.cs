@@ -8,31 +8,25 @@ namespace INEZ.Pages
 {
     public class EditItemModel : ComponentBase
     {
-        [Inject]
-        protected IUriHelper UriHelper { get; set; }
+        private bool _creationMode;
 
-        [Inject]
-        protected ItemsService ItemsService { get; set; }
+        [Inject] protected IUriHelper UriHelper { get; set; }
 
-        [Parameter]
-        protected string Id { get; private set; } = null;
+        [Inject] protected ItemsService ItemsService { get; set; }
+
+        [Parameter] public string Id { get; set; } = null;
+
         protected string PageTitle
         {
             get
             {
-                if (creationMode)
-                {
+                if (_creationMode)
                     return "Eintrag hinzufügen";
-                }
-                else
-                {
-                    return "Eintrag bearbeiten";
-                }
+                return "Eintrag bearbeiten";
             }
         }
-        protected Item Item { get; private set; }
 
-        private bool creationMode;
+        protected Item Item { get; private set; }
 
 
         protected override async Task OnParametersSetAsync()
@@ -40,25 +34,22 @@ namespace INEZ.Pages
             if (string.IsNullOrEmpty(Id))
             {
                 Item = new Item();
-                creationMode = true;
+                _creationMode = true;
             }
             else
             {
-                creationMode = false;
+                _creationMode = false;
                 Item = await ItemsService.GetItemAsync(Guid.Parse(Id));
             }
         }
 
         protected async Task Save()
         {
-            if (creationMode)
-            {
+            // TODO: Add model validation
+            if (_creationMode)
                 await ItemsService.CreateItemAsync(Item);
-            }
             else
-            {
                 await ItemsService.SaveChangesAsync();
-            }
             UriHelper.NavigateTo("/einkaufsliste");
         }
     }

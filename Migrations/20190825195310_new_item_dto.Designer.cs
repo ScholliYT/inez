@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace INEZ.Migrations
 {
     [DbContext(typeof(InezContext))]
-    [Migration("20190814224303_Initial")]
-    partial class Initial
+    [Migration("20190825195310_new_item_dto")]
+    partial class new_item_dto
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,14 +27,37 @@ namespace INEZ.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
+                    b.Property<string>("Brands")
+                        .HasColumnType("nvarchar(127)")
+                        .HasMaxLength(127);
+
+                    b.Property<string>("DatasourceUrl")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<decimal>("EAN")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.Property<string>("GenericName")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("ImageSmallUrl")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(30)")
-                        .HasMaxLength(30);
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("Quantity")
+                        .HasColumnType("nvarchar(127)")
+                        .HasMaxLength(127);
 
                     b.HasKey("Id");
 
