@@ -51,6 +51,7 @@ namespace INEZ.Pages
 
         protected async Task Save()
         {
+            // TODO: Add model validation
             if (creationMode)
             {
                 await ItemsService.CreateItemAsync(Item);

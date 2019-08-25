@@ -36,15 +36,17 @@ else
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>@NameDisplayValue</th>
-                            <th>@DescriptionDisplayValue</th>
-                            <th></th>
+                            <th>@QuantitiyColumnName</th>
+                            <th>@NameColumnName</th>
+                            <th>@DescriptionColumnName</th>
+                            <th></th> @*for buttons*@
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Items)
                         {
                             <tr>
+                                <td>@item.BaseQuantity.DisplayValue</td>
                                 <td>@item.Name</td>
                                 <td>@item.Description</td>
                                 <td>
@@ -74,7 +76,15 @@ else
         await LoadItems();
     }
 
-    public string NameDisplayValue
+    public string QuantitiyColumnName
+    {
+        get
+        {
+            return DisplayHelper.GetDisplayName<Quantity>(q => q.DisplayValue) ?? nameof(Quantity.DisplayValue);
+        }
+    }
+
+    public string NameColumnName
     {
         get
         {
@@ -82,7 +92,7 @@ else
         }
     }
 
-    public string DescriptionDisplayValue
+    public string DescriptionColumnName
     {
         get
         {

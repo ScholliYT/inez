@@ -17,24 +17,33 @@ namespace INEZ.Data
 
         public async Task<IEnumerable<Item>> GetItemsAsync()
         {
-            return await _context.Items.ToListAsync();
+            return await _context.Items
+                .Include(i => i.BaseQuantity)
+                    .ThenInclude(b => b.Unit)
+                .ToListAsync();
         }
 
         public async Task<Item> GetItemAsync(Guid id)
         {
-            return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.Items
+                .Include(i => i.BaseQuantity)
+                    .ThenInclude(b => b.Unit)
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<IEnumerable<Item>> SearchItemsAsync(string searchterm)
         {
-            return await _context.Items.Where(i => i.Name.Contains(searchterm) || i.Description.Contains(searchterm)).ToListAsync();
+            return await _context.Items.Where(i => i.Name.Contains(searchterm) || i.Description.Contains(searchterm))
+                .Include(i => i.BaseQuantity)
+                    .ThenInclude(b => b.Unit)
+                .ToListAsync();
         }
 
         public async Task<Item> CreateItemAsync(Item item)
         {
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
-            return item;
+            return await GetItemAsync(item.Id);
         }
 
         public async Task DeleteItem(Item item)
