@@ -13,7 +13,6 @@ namespace INEZ.Data.Entities
         public Quantity()
         {
             Id = Guid.NewGuid();
-            Unit = new Unit();
         }
 
         [Key]
@@ -26,12 +25,13 @@ namespace INEZ.Data.Entities
 
         [Required]
         [DisplayName("Einheit")]
-        public Unit Unit { get; set; }
+        [StringLength(20)]
+        public string Unit { get; set; }
 
 
         public override string ToString()
         {
-            return $"{Count} {Unit.Name}";
+            return $"{Count} {Unit}";
         }
 
         [DisplayName("Menge")]

@@ -4,14 +4,16 @@ using INEZ.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace INEZ.Migrations
 {
     [DbContext(typeof(InezContext))]
-    partial class InezContextModelSnapshot : ModelSnapshot
+    [Migration("20190825024003_Add_Units_tocontext")]
+    partial class Add_Units_tocontext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,14 +55,26 @@ namespace INEZ.Migrations
                     b.Property<float>("Count")
                         .HasColumnType("real");
 
-                    b.Property<string>("Unit")
+                    b.Property<string>("UnitName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UnitName");
+
                     b.ToTable("Quantity");
+                });
+
+            modelBuilder.Entity("INEZ.Data.Entities.Unit", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.HasKey("Name");
+
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("INEZ.Data.Entities.Item", b =>
@@ -68,6 +82,15 @@ namespace INEZ.Migrations
                     b.HasOne("INEZ.Data.Entities.Quantity", "BaseQuantity")
                         .WithMany()
                         .HasForeignKey("BaseQuantityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("INEZ.Data.Entities.Quantity", b =>
+                {
+                    b.HasOne("INEZ.Data.Entities.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -19,7 +19,6 @@ namespace INEZ.Data
         {
             return await _context.Items
                 .Include(i => i.BaseQuantity)
-                    .ThenInclude(b => b.Unit)
                 .ToListAsync();
         }
 
@@ -27,7 +26,6 @@ namespace INEZ.Data
         {
             return await _context.Items
                 .Include(i => i.BaseQuantity)
-                    .ThenInclude(b => b.Unit)
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
@@ -35,7 +33,6 @@ namespace INEZ.Data
         {
             return await _context.Items.Where(i => i.Name.Contains(searchterm) || i.Description.Contains(searchterm))
                 .Include(i => i.BaseQuantity)
-                    .ThenInclude(b => b.Unit)
                 .ToListAsync();
         }
 
