@@ -13,6 +13,7 @@ namespace INEZ.Data.Entities
         public Quantity()
         {
             Id = Guid.NewGuid();
+            Unit = new Unit();
         }
 
         [Key]
@@ -20,6 +21,7 @@ namespace INEZ.Data.Entities
 
         [Required]
         [DisplayName("Menge")]
+        [Range(0, float.MaxValue, ErrorMessage = "Die Menge muss positiv sein")]
         public float Count { get; set; }
 
         [Required]

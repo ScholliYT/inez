@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace INEZ.Data.Entities
 {
@@ -10,15 +9,17 @@ namespace INEZ.Data.Entities
         public Item()
         {
             Id = Guid.NewGuid();
+            BaseQuantity = new Quantity();
         }
+
         [Key]
         public Guid Id { get; set; }
         [Required]
         [DisplayName("Name")]
-        [StringLength(30, MinimumLength = 3)]
+        [StringLength(30, MinimumLength = 3, ErrorMessage = "Der Name muss eine Länge zwischen 3 und 30 Zeichen haben")]
         public string Name { get; set; }
         [DisplayName("Beschreibung")]
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "Die Beschreibung darf maximal 100 Zeichen lang sein")]
         public string Description { get; set; }
 
         [Required]
