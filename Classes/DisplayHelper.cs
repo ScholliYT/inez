@@ -21,25 +21,24 @@ namespace INEZ.Classes
             {
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
-                    var ue = expression.Body as UnaryExpression;
                     propertyList =
-                        (ue != null ? ue.Operand : null).ToString().Split(".".ToCharArray())
-                        .Skip(1); //don't use the root property
+                        (expression.Body is UnaryExpression ue ? ue.Operand : null)?.ToString().Split(".".ToCharArray())
+                        .Skip(1).ToList(); //don't use the root property
                     break;
                 default:
-                    propertyList = expression.Body.ToString().Split(".".ToCharArray()).Skip(1);
+                    propertyList = expression.Body.ToString().Split(".".ToCharArray()).Skip(1).ToList();
                     break;
             }
 
             //the propert name is what we're after
-            propertyName = propertyList.Last();
+            propertyName = (propertyList ?? throw new InvalidOperationException()).Last();
             //list of properties - the last property name
             properties = propertyList.Take(propertyList.Count() - 1).ToArray(); //grab all the parent properties
 
             foreach (var property in properties)
             {
                 var propertyInfo = type.GetProperty(property);
-                type = propertyInfo.PropertyType;
+                if (propertyInfo != null) type = propertyInfo.PropertyType;
             }
 
             MemberInfo prop = type.GetProperty(propertyName);
