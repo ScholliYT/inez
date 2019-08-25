@@ -1,15 +1,16 @@
-﻿using INEZ.Data.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using INEZ.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace INEZ.Data
 {
     public class ItemsService
     {
-        private InezContext _context;
+        private readonly InezContext _context;
+
         public ItemsService(InezContext context)
         {
             _context = context;

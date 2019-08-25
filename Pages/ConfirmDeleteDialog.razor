@@ -1,5 +1,4 @@
-﻿@using Blazored.Modal.Services
-@using INEZ.Data.Entities
+﻿@using INEZ.Data.Entities
 @inject IModalService ModalService
 
 <p>Möchtest du "@Item.Name" wirklich löschen?</p>
@@ -7,7 +6,9 @@
 <button @onclick="Confirm" class="btn btn-danger">Bestätigen</button>
 
 @code {
-    [CascadingParameter] ModalParameters Parameters { get; set; }
+
+    [CascadingParameter]
+    ModalParameters Parameters { get; set; }
 
     public Item Item { get; set; }
 
@@ -18,11 +19,12 @@
 
     void Confirm()
     {
-        ModalService.Close(ModalResult.Ok<Item>(Item));
+        ModalService.Close(ModalResult.Ok(Item));
     }
 
     void Cancel()
     {
         ModalService.Close(ModalResult.Cancel());
     }
+
 }

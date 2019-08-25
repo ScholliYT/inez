@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace INEZ.Data.Entities
 {
@@ -15,8 +11,7 @@ namespace INEZ.Data.Entities
             Id = Guid.NewGuid();
         }
 
-        [Key]
-        public Guid Id { get; set; }
+        [Key] public Guid Id { get; set; }
 
         [Required]
         [DisplayName("Menge")]
@@ -28,19 +23,12 @@ namespace INEZ.Data.Entities
         [StringLength(20)]
         public string Unit { get; set; }
 
+        [DisplayName("Menge")] public string DisplayValue => ToString();
+
 
         public override string ToString()
         {
             return $"{Count} {Unit}";
-        }
-
-        [DisplayName("Menge")]
-        public string DisplayValue
-        {
-            get
-            {
-                return this.ToString();
-            }
         }
     }
 }

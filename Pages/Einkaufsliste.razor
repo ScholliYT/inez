@@ -2,13 +2,14 @@
 @using INEZ.Data
 @using INEZ.Classes
 @using INEZ.Data.Entities
+@using Microsoft.AspNetCore.Components
 
 
 @inject ItemsService ItemsService
 @inject IUriHelper UriHelper
 <h3>Einkaufsliste</h3>
 
-@if (Items == null)
+@if (_items == null)
 {
     <p><em>Lade...</em></p>
 }
@@ -43,7 +44,7 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Items)
+                        @foreach (var item in _items)
                         {
                             <tr>
                                 <td>@item.BaseQuantity.DisplayValue</td>
@@ -63,10 +64,10 @@ else
 }
 
 @code {
-    IEnumerable<Item> Items;
+    IEnumerable<Item> _items;
 
     [Inject]
-    protected IJSRuntime JSRuntime { get; set; }
+    protected IJSRuntime JsRuntime { get; set; }
 
     [Inject]
     protected IModalService Modal { get; set; }
@@ -117,7 +118,7 @@ else
 
     private async Task LoadItems()
     {
-        Items = await ItemsService.GetItemsAsync();
+        _items = await ItemsService.GetItemsAsync();
         StateHasChanged();
     }
 
@@ -139,7 +140,7 @@ else
 
     private async Task Search(string term)
     {
-        Items = await ItemsService.SearchItemsAsync(term);
+        _items = await ItemsService.SearchItemsAsync(term);
         StateHasChanged();
     }
 
@@ -149,9 +150,9 @@ else
         await SearchClick();
     }
 
-    protected void EditItem(Guid Id)
+    protected void EditItem(Guid id)
     {
-        UriHelper.NavigateTo("/edititem/" + Id.ToString());
+        UriHelper.NavigateTo("/edititem/" + id.ToString());
     }
 
     protected void ConfirmDelete(Item item)

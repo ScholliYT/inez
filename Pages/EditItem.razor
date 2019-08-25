@@ -1,54 +1,54 @@
 ﻿@page "/edititem"
 @page "/edititem/{Id}"
-@inherits INEZ.Pages.EditItemModel
+@inherits EditItemModel
 
 <h3>@PageTitle</h3>
 
 @if (Item == null)
 {
-    <p><em>Loading...</em></p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
 else
 {
+    <EditForm Model="@Item" OnValidSubmit="@Save">
+        <DataAnnotationsValidator/>
+        <div asp-validation-summary="All" class="text-danger"></div>
 
-<EditForm Model="@Item" OnValidSubmit="@Save">
-    <DataAnnotationsValidator />
-    <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group row mb-1">
+            <label class="col-sm-3 col-form-label" for="Name">Name:</label>
 
-    <div class="form-group row mb-1">
-        <label class="col-sm-3 col-form-label" for="Name">Name:</label>
+            <div class="col-sm-9">
+                <InputText Class="form-control" @bind-Value="@Item.Name"/>
+                           <ValidationMessage For="@(() => Item.Name)"/>
+                           </div>
+                           </div>
+                           <div class="form-group row mb-1">
+                               <label class="col-sm-3 col-form-label" for="Description">Beschreibung:</label>
 
-        <div class="col-sm-9">
-            <InputText Class="form-control" @bind-Value="@Item.Name" />
-            <ValidationMessage For="@(() => Item.Name)" />
-        </div>
-    </div>
-    <div class="form-group row mb-1">
-        <label class="col-sm-3 col-form-label" for="Description">Beschreibung:</label>
+                               <div class="col-sm-9">
+                                   <InputText Class="form-control" @bind-Value="@Item.Description"/>
+                                              <ValidationMessage For="@(() => Item.Description)"/>
+                                              </div>
+                                              </div>
+                                              <div class="form-group row mb-1">
+                                                  <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
 
-        <div class="col-sm-9">
-            <InputText Class="form-control" @bind-Value="@Item.Description" />
-            <ValidationMessage For="@(() => Item.Description)" />
-        </div>
-    </div>
-    <div class="form-group row mb-1">
-        <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
+                                                  <div class="col-sm-9">
+                                                      <InputNumber Class="form-control" @bind-Value="@Item.BaseQuantity.Count"/>
+                                                                   <ValidationMessage For="@(() => Item.BaseQuantity.Count)"/>
+                                                                   </div>
+                                                                   </div>
+                                                                   <div class="form-group row mb-1">
+                                                                       <label class="col-sm-3 col-form-label" for="Unit">Einheit:</label>
 
-        <div class="col-sm-9">
-            <InputNumber Class="form-control" @bind-Value="@Item.BaseQuantity.Count" />
-            <ValidationMessage For="@(() => Item.BaseQuantity.Count)" />
-        </div>
-    </div>
-    <div class="form-group row mb-1">
-        <label class="col-sm-3 col-form-label" for="Unit">Einheit:</label>
+                                                                       <div class="col-sm-9">
+                                                                           <InputText Class="form-control" @bind-Value="@Item.BaseQuantity.Unit"/>
+                                                                                      <ValidationMessage For="@(() => Item.BaseQuantity.Unit)"/>
+                                                                                      </div>
+                                                                                      </div>
 
-        <div class="col-sm-9">
-            <InputText Class="form-control" @bind-Value="@Item.BaseQuantity.Unit" />
-            <ValidationMessage For="@(() => Item.BaseQuantity.Unit)" />
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Speichern</button>
-</EditForm>
-                
+                                                                                      <button type="submit" class="btn btn-primary">Speichern</button>
+                                                                                      </EditForm>
 }

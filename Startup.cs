@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using Blazored.Modal;
 using INEZ.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,15 +27,12 @@ namespace INEZ
             services.AddServerSideBlazor();
 
             if (Environment.GetEnvironmentVariable("APP_ENVIRONMENT") == "Production")
-            {
                 services.AddDbContext<InezContext>(options =>
-                        options.UseSqlServer(Configuration.GetConnectionString("InezDbConnection")));
-            }
+                    options.UseSqlServer(Configuration.GetConnectionString("InezDbConnection")));
             else
-            {
                 services.AddDbContext<InezContext>(
-                    options => options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
-            }
+                    options => options.UseSqlServer(
+                        "Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
 
             services.AddBlazoredModal();
             services.AddScoped<ItemsService>();
