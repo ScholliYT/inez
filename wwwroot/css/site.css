@@ -103,13 +103,18 @@ app {
     outline: 1px solid #26b050;
 }
 
-.invalid {
-    outline: 1px solid red;
+/*bootstrap*/
+.form-control.invalid {
+    border-color: #dc3545;
 }
 
 .validation-message {
-    color: red;
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
+    color: #dc3545;
 }
+/*bootstrap-end*/
 
 @media (max-width: 767.98px) {
     .main .top-row {
