@@ -1,12 +1,15 @@
 using System;
 using Blazored.Modal;
-using INEZ.Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using INEZ.Areas.Identity;
+using INEZ.Data;
 
 namespace INEZ
 {
@@ -27,13 +30,26 @@ namespace INEZ
             services.AddServerSideBlazor();
 
             if (Environment.GetEnvironmentVariable("APP_ENVIRONMENT") == "Production")
+            {
                 services.AddDbContext<InezContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("InezDbConnection")));
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("InezUserDbConnection")));
+            }
             else
-                services.AddDbContext<InezContext>(
-                    options => options.UseSqlServer(
-                        "Server=(localdb)\\mssqllocaldb;Database=inezdb;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            {
+                services.AddDbContext<InezContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultInezDbConnection")));
+               
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("DefaultInezUserDbConnection")));
+            }
 
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddScoped<AuthenticationStateProvider, RevalidatingAuthenticationStateProvider<IdentityUser>>();
             services.AddBlazoredModal();
             services.AddScoped<ItemsService>();
         }
@@ -44,10 +60,10 @@ namespace INEZ
             // Automatically perform database migration
             MigrateDatabase(app);
 
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -61,8 +77,12 @@ namespace INEZ
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub<App>(selector: "app");
                 endpoints.MapFallbackToPage("/_Host");
             });
@@ -73,6 +93,11 @@ namespace INEZ
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 using (var context = serviceScope.ServiceProvider.GetService<InezContext>())
+                {
+                    context.Database.Migrate();
+                }
+
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
                 {
                     context.Database.Migrate();
                 }

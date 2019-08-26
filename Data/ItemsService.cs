@@ -34,6 +34,14 @@ namespace INEZ.Data
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Item>> FuzzySearchItemsAsync(string searchterm)
+        {
+            // apply lowercase filter
+            Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(searchterm.ToLower());
+
+            return (await GetItemsAsync()).Where(item => IsMatch(searchterm.ToLower(), lev, item.Name.ToLower()));
+        }
+
         public async Task<Item> CreateItemAsync(Item item)
         {
             _context.Items.Add(item);
@@ -50,6 +58,21 @@ namespace INEZ.Data
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        private bool IsMatch(string compSource, Fastenshtein.Levenshtein compSourceLev, string compTo)
+        {
+            return compSource.Equals(compTo) ||
+                   compSource.Contains(compTo) ||
+                   compTo.Contains(compSource) ||
+                   1 - LevenshteinDistanceNormalized(compSourceLev, compSource.Length, compTo) > 0.8d;
+        }
+
+        private double LevenshteinDistanceNormalized(Fastenshtein.Levenshtein lev, int lenLev, string str)
+        {
+            int maxlen = Math.Max(lenLev, str.Length);
+            int distance = lev.DistanceFrom(str);
+            return (double)distance / maxlen;
         }
     }
 }
