@@ -21,16 +21,16 @@ else
                 <button class="btn btn-primary" type="button" @onclick=AddNew>Hinzufügen</button>
             </div>
             <div class="col">
-                <form class="form-row">
+                <form class="form-grid">
                     <div class="input-group mb-auto">
                         <input type="search" class="form-control" @bind-value="this.SearchTerm" @bind-value:event="oninput" />
                         <div class="input-group-append">
                             <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen/Hinzufügen</button>
                             <button class="btn btn-danger" type="button" @onclick="ClearClick">x</button>
                         </div>
-                        <div class="form-check align-middle">
-                            <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="UseFuzzySearch"/>
+                        <div class="form-check form-check-inline">
                             <label class="form-check-label" for="usefuzzysearch">Fuzzy Suche</label>
+                            <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="UseFuzzySearch" />
                         </div>
                     </div>
                 </form>
@@ -53,8 +53,10 @@ else
                                 <td>@item.Quantity</td>
                                 <td>@item.Name</td>
                                 <td>
-                                    <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
-                                    <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
+                                        <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -66,7 +68,8 @@ else
 }
 
 @code {
-    IEnumerable<Item> _items;
+    IEnumerable<Item>
+    _items;
 
     [Inject]
     protected IJSRuntime JsRuntime { get; set; }
@@ -83,7 +86,8 @@ else
     {
         get
         {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
+            return DisplayHelper.GetDisplayName<Item>
+                (i => i.Quantity) ?? nameof(Item.Quantity);
         }
     }
 
@@ -91,7 +95,8 @@ else
     {
         get
         {
-            return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+            return DisplayHelper.GetDisplayName<Item>
+                (i => i.Name) ?? nameof(Item.Name);
         }
     }
 
@@ -149,7 +154,7 @@ else
             try
             {
 
-            _items = await ItemsService.FuzzySearchItemsAsync(term);
+                _items = await ItemsService.FuzzySearchItemsAsync(term);
             }
             catch (Exception ex)
             {
