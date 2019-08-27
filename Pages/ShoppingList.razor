@@ -1,8 +1,6 @@
 ﻿@page "/shoppinglist"
 @inherits INEZ.Pages.ShoppingListModel
 
-
-
 <h3>Einkaufsliste </h3>
 
 <AuthorizeView>
@@ -22,14 +20,14 @@
                         <button class="btn btn-primary" type="button" @onclick=@AddNew>Hinzufügen</button>
                     </div>
                     <div class="col">
-                        <form class="form-row">
+                        <form class="form-grid">
                             <div class="input-group mb-auto">
                                 <input type="search" class="form-control" @bind-value="@SearchTerm" bind-Value:event="oninput" />
                                 <div class="input-group-append">
                                     <button class="btn btn-secondary" type="button" @onclick="@SearchClick">Suchen/Hinzufügen</button>
                                     <button class="btn btn-danger" type="button" @onclick="@ClearClick">x</button>
                                 </div>
-                                <div class="form-check align-middle">
+                                <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="@UseFuzzySearch" />
                                     <label class="form-check-label" for="usefuzzysearch">Fuzzy Suche</label>
                                 </div>
@@ -54,8 +52,10 @@
                                         <td>@shoppingListItem.Quantity</td>
                                         <td>@shoppingListItem.Name</td>
                                         <td>
-                                            <button type="button" class="btn btn-light" @onclick=@(() => EditItem(shoppingListItem.Id))>...</button>
-                                            <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(shoppingListItem))>x</button>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-light" @onclick=@(() => EditItem(shoppingListItem.Id))>...</button>
+                                                <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(shoppingListItem))>x</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
