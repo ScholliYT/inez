@@ -1,13 +1,14 @@
-@page "/einkaufsliste"
+@page "/coredata"
 @using INEZ.Data
 @using INEZ.Classes
 @using INEZ.Data.Entities
+@using INEZ.Data.Services
 @using Microsoft.AspNetCore.Components
 
 
-@inject ItemsService ItemsService
+@inject CoreDataItemsService ItemsService
 @inject IUriHelper UriHelper
-<h3>Einkaufsliste</h3>
+<h3>Stammdaten </h3>
 
 @if (_items == null)
 {
@@ -29,8 +30,8 @@ else
                             <button class="btn btn-danger" type="button" @onclick="ClearClick">x</button>
                         </div>
                         <div class="form-check form-check-inline">
-                            <label class="form-check-label" for="usefuzzysearch">Fuzzy Suche</label>
                             <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="UseFuzzySearch" />
+                            <label class="form-check-label" for="usefuzzysearch">Fuzzy Suche</label>
                         </div>
                     </div>
                 </form>
@@ -68,8 +69,7 @@ else
 }
 
 @code {
-    IEnumerable<Item>
-    _items;
+    IEnumerable<CoreDataItem> _items;
 
     [Inject]
     protected IJSRuntime JsRuntime { get; set; }
@@ -86,8 +86,7 @@ else
     {
         get
         {
-            return DisplayHelper.GetDisplayName<Item>
-                (i => i.Quantity) ?? nameof(Item.Quantity);
+            return DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
         }
     }
 
@@ -95,8 +94,7 @@ else
     {
         get
         {
-            return DisplayHelper.GetDisplayName<Item>
-                (i => i.Name) ?? nameof(Item.Name);
+            return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
         }
     }
 
@@ -180,7 +178,7 @@ else
         UriHelper.NavigateTo("/edititem/" + id.ToString());
     }
 
-    protected void ConfirmDelete(Item item)
+    protected void ConfirmDelete(CoreDataItem item)
     {
         var parameters = new ModalParameters();
 
@@ -195,8 +193,8 @@ else
         Modal.OnClose -= DelteConfirmModalClosed;
         if (!result.Cancelled)
         {
-            await ItemsService.DeleteItem((Item)result.Data);
-            await LoadItems();
+            await ItemsService.DeleteItem((CoreDataItem)result.Data);
+            await SearchClick();
         }
     }
 }

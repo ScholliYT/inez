@@ -9,6 +9,8 @@ namespace INEZ.Data
         {
         }
 
-        public DbSet<Item> Items { get; set; }
+        public DbSet<CoreDataItem> CoreDataItems { get; set; }
+
+        public DbSet<ShoppingListItem> ShoppingListItems { get; set; }
     }
 }

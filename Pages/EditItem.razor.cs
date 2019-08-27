@@ -2,17 +2,17 @@
 using System.Threading.Tasks;
 using INEZ.Data;
 using INEZ.Data.Entities;
+using INEZ.Data.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace INEZ.Pages
 {
     public class EditItemModel : ComponentBase
     {
-        private bool _creationMode;
-
         [Inject] protected IUriHelper UriHelper { get; set; }
+        [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
 
-        [Inject] protected ItemsService ItemsService { get; set; }
+        private bool _creationMode;
 
         [Parameter] public string Id { get; set; } = null;
 
@@ -26,20 +26,19 @@ namespace INEZ.Pages
             }
         }
 
-        protected Item Item { get; private set; }
-
+        protected CoreDataItem Item { get; private set; }
 
         protected override async Task OnParametersSetAsync()
         {
             if (string.IsNullOrEmpty(Id))
             {
-                Item = new Item();
+                Item = new CoreDataItem();
                 _creationMode = true;
             }
             else
             {
                 _creationMode = false;
-                Item = await ItemsService.GetItemAsync(Guid.Parse(Id));
+                Item = await CoreDataItemsService.GetItemAsync(Guid.Parse(Id));
             }
         }
 
@@ -47,10 +46,10 @@ namespace INEZ.Pages
         {
             // TODO: Add model validation
             if (_creationMode)
-                await ItemsService.CreateItemAsync(Item);
+                await CoreDataItemsService.CreateItemAsync(Item);
             else
-                await ItemsService.SaveChangesAsync();
-            UriHelper.NavigateTo("/einkaufsliste");
+                await CoreDataItemsService.SaveChangesAsync();
+            UriHelper.NavigateTo("/coredata");
         }
     }
 }

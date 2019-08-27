@@ -4,38 +4,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using INEZ.Classes;
 using INEZ.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace INEZ.Data
+namespace INEZ.Data.Services
 {
-    public class ItemsService
+    public class CoreDataItemsService
     {
         private readonly InezContext _context;
 
-        public ItemsService(InezContext context)
+        public CoreDataItemsService(InezContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Item>> GetItemsAsync()
+        public async Task<IEnumerable<CoreDataItem>> GetItemsAsync()
         {
-            return await _context.Items
-                .ToListAsync();
+            return await _context.CoreDataItems.ToListAsync();
         }
 
-        public async Task<Item> GetItemAsync(Guid id)
+        public async Task<CoreDataItem> GetItemAsync(Guid id)
         {
-            return await _context.Items
+            return await _context.CoreDataItems
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<IEnumerable<Item>> SearchItemsAsync(string searchterm)
+        public async Task<IEnumerable<CoreDataItem>> SearchItemsAsync(string searchterm)
         {
-            return await _context.Items.Where(i => i.Name.Contains(searchterm))
+            return await _context.CoreDataItems.Where(i => i.Name.Contains(searchterm))
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Item>> FuzzySearchItemsAsync(string searchterm)
+        public async Task<IEnumerable<CoreDataItem>> FuzzySearchItemsAsync(string searchterm)
         {
             // apply lowercase filter
             //Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(searchterm.ToLower());
@@ -43,7 +43,7 @@ namespace INEZ.Data
 
             var items = await GetItemsAsync();
 
-            IEnumerable<Item> result = items.Select(item =>
+            IEnumerable<CoreDataItem> result = items.Select(item =>
             new
             {
                 // Create new anonymous object to hold score along with the item itself
@@ -57,16 +57,16 @@ namespace INEZ.Data
             return result;
         }
 
-        public async Task<Item> CreateItemAsync(Item item)
+        public async Task<CoreDataItem> CreateItemAsync(CoreDataItem item)
         {
-            _context.Items.Add(item);
+            _context.CoreDataItems.Add(item);
             await _context.SaveChangesAsync();
             return await GetItemAsync(item.Id);
         }
 
-        public async Task DeleteItem(Item item)
+        public async Task DeleteItem(CoreDataItem item)
         {
-            _context.Items.Remove(item);
+            _context.CoreDataItems.Remove(item);
             await _context.SaveChangesAsync();
         }
 
