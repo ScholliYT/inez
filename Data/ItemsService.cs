@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using INEZ.Classes;
 using INEZ.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,9 +38,23 @@ namespace INEZ.Data
         public async Task<IEnumerable<Item>> FuzzySearchItemsAsync(string searchterm)
         {
             // apply lowercase filter
-            Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(searchterm.ToLower());
+            //Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(searchterm.ToLower());
+            //return (await GetItemsAsync()).Where(item => IsMatch(searchterm.ToLower(), lev, item.Name.ToLower()));
 
-            return (await GetItemsAsync()).Where(item => IsMatch(searchterm.ToLower(), lev, item.Name.ToLower()));
+            var items = await GetItemsAsync();
+
+            IEnumerable<Item> result = items.Select(item =>
+            new
+            {
+                // Create new anonymous object to hold score along with the item itself
+                Item = item,
+                Score = FuzzyMatcher.FuzzyMatch(item.Name, searchterm)
+            })
+            .OrderByDescending(i => i.Score)
+            .Take(25)
+            .Select(i => i.Item);
+
+            return result;
         }
 
         public async Task<Item> CreateItemAsync(Item item)
