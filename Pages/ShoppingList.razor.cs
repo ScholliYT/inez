@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using INEZ.Data;
 using INEZ.Data.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -11,19 +10,20 @@ using Blazored.Modal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using INEZ.Data.Services;
+using System.Security.Claims;
+
 
 namespace INEZ.Pages
 {
     public class ShoppingListModel : ComponentBase
     {
-        [Inject] protected IJSRuntime JsRuntime { get; set; }
         [Inject] protected IModalService Modal { get; set; }
         [Inject] protected IUriHelper UriHelper { get; set; }
-        [Inject] protected IHttpContextAccessor HTTPContextAccessor { get; set; }
-        [Inject] protected UserManager<IdentityUser> UserManager { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
+
         public IEnumerable<ShoppingListItem> ShoppingListItems { get; set; }
 
+        private string currentUserId;
 
         protected override async Task OnInitializedAsync()
         {
@@ -70,14 +70,11 @@ namespace INEZ.Pages
             }
         }
 
-        private async Task<IdentityUser> GetCurrentUserAsync() => await UserManager.GetUserAsync(HTTPContextAccessor.HttpContext.User);
-
         private async Task LoadItems()
         {
-            var user = await GetCurrentUserAsync();
-            if (user != null)
+            if (currentUserId != null)
             {
-                ShoppingListItems = await ShoppingListItemsService.GetShoppingListItemsAsync(user);
+                ShoppingListItems = await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId);
             }
             StateHasChanged();
         }
@@ -140,6 +137,23 @@ namespace INEZ.Pages
                 await ShoppingListItemsService.DeleteItem((ShoppingListItem)result.Data);
                 await LoadItems();
             }
+        }
+
+        /// <summary>
+        /// Used to get the userId from Razor component because only there the HTTPContext is available
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns>true</returns>
+        protected bool SetCurrentUserId(string userid)
+        {
+            // prevent infinite loop
+            if (currentUserId != userid)
+            {
+                currentUserId = userid;
+                LoadItems().ConfigureAwait(false);
+            }
+
+            return true;
         }
     }
 }

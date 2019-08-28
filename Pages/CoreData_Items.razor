@@ -27,7 +27,7 @@ else
                         <input type="search" class="form-control" @bind-value="this.SearchTerm" @bind-value:event="oninput" />
                         <div class="input-group-append">
                             <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen/Hinzufügen</button>
-                            <button class="btn btn-danger" type="button" @onclick="ClearClick">x</button>
+                            <button class="btn btn-danger" type="button" @onclick="ClearClick"><span class="oi oi-trash" /></button>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="UseFuzzySearch" />
@@ -55,8 +55,8 @@ else
                                 <td>@item.Name</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))>...</button>
-                                        <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))>x</button>
+                                        <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))><span class="oi oi-pencil" /></button>
+                                        <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))><span class="oi oi-trash" /></button>
                                     </div>
                                 </td>
                             </tr>

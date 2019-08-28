@@ -3,62 +3,71 @@
 @page "/edititem/{Datatype:int}/{Id:guid}"
 @inherits EditItemModel
 @using INEZ.Data.Entities
+@using System.Security.Claims;
 
-@if (LoadFailed)
-{
-    <h2>Entschuldigung, diese Seite konnte auf grund eines Fehlers nicht geladen werden.</h2>
-}
-else if (Item == null)
-{
-    <p><em>Lade...</em></p>
-}
-else
-{
-    <h3>@(CreationMode ? "Eintrag hinzufügen" : "Eintrag bearbeiten")</h3>
 
-    <EditForm Model="@Item" OnValidSubmit="@Save">
-        <DataAnnotationsValidator />
-        <div asp-validation-summary="All" class="text-danger"></div>
-
-        <div class="form-group row mb-1">
-            <label class="col-sm-3 col-form-label" for="Name">Name:</label>
-
-            <div class="col-sm-9">
-                <InputText Class="form-control" @bind-Value="@Item.Name" />
-                <ValidationMessage For="@(() => Item.Name)" />
-            </div>
-        </div>
-        @if (Datatype == EditDataType.CoreData)
+<AuthorizeView Context="authorizeview_context">
+    <NotAuthorized>
+        <p><em>Bitte Melde dich an um die Einkaufsliste nutzen zu können.</em></p>
+    </NotAuthorized>
+    <Authorized>
+        @if (LoadFailed)
         {
-            <div class="form-group row mb-1">
-                <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
-
-                <div class="col-sm-9">
-                    <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).GenericName)" />
-                    <ValidationMessage For="@(() => (((CoreDataItem)Item).GenericName))" />
-                </div>
-            </div>
+            <h2>Entschuldigung, diese Seite konnte aufgrund eines Fehlers nicht geladen werden.</h2>
         }
-        <div class="form-group row mb-1">
-            <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
-
-            <div class="col-sm-9">
-                <InputText Class="form-control" @bind-Value="@Item.Quantity" />
-                <ValidationMessage For="@(() => Item.Quantity)" />
-            </div>
-        </div>
-        @if (Datatype == EditDataType.CoreData)
+        else if (SetCurrentUserId(authorizeview_context.User.FindFirstValue(ClaimTypes.NameIdentifier)) && Item == null)
         {
-            <div class="form-group row mb-1">
-                <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
-
-                <div class="col-sm-9">
-                    <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).Brands)" />
-                    <ValidationMessage For="@(() => ((CoreDataItem)Item).Brands)" />
-                </div>
-            </div>
+            <p><em>Lade...</em></p>
         }
+        else
+        {
+            <h3>@(CreationMode ? "Eintrag hinzufügen" : "Eintrag bearbeiten")</h3>
 
-        <button type="submit" class="btn btn-primary">@(CreationMode ? "Hinzufügen" : "Ändern")</button>
-    </EditForm>
-}
+            <EditForm Model="@Item" OnValidSubmit="@Save">
+                <DataAnnotationsValidator />
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group row mb-1">
+                    <label class="col-sm-3 col-form-label" for="Name">Name:</label>
+
+                    <div class="col-sm-9">
+                        <InputText Class="form-control" @bind-Value="@Item.Name" />
+                        <ValidationMessage For="@(() => Item.Name)" />
+                    </div>
+                </div>
+                @if ((EditDataType)Datatype == EditDataType.CoreData)
+                {
+                    <div class="form-group row mb-1">
+                        <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
+
+                        <div class="col-sm-9">
+                            <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).GenericName)" />
+                            <ValidationMessage For="@(() => (((CoreDataItem)Item).GenericName))" />
+                        </div>
+                    </div>
+                }
+                <div class="form-group row mb-1">
+                    <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
+
+                    <div class="col-sm-9">
+                        <InputText Class="form-control" @bind-Value="@Item.Quantity" />
+                        <ValidationMessage For="@(() => Item.Quantity)" />
+                    </div>
+                </div>
+                @if ((EditDataType)Datatype == EditDataType.CoreData)
+                {
+                    <div class="form-group row mb-1">
+                        <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
+
+                        <div class="col-sm-9">
+                            <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).Brands)" />
+                            <ValidationMessage For="@(() => ((CoreDataItem)Item).Brands)" />
+                        </div>
+                    </div>
+                }
+
+                <button type="submit" class="btn btn-primary">@(CreationMode ? "Hinzufügen" : "Ändern")</button>
+            </EditForm>
+        }
+    </Authorized>
+</AuthorizeView>
