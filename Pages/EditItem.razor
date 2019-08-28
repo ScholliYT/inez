@@ -1,17 +1,21 @@
 ﻿@page "/edititem"
-@page "/edititem/{Id}"
+@page "/edititem/{Datatype:int}"
+@page "/edititem/{Datatype:int}/{Id:guid}"
 @inherits EditItemModel
+@using INEZ.Data.Entities
 
-<h3>@PageTitle</h3>
-
-@if (Item == null)
+@if (LoadFailed)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
+    <h2>Entschuldigung, diese Seite konnte auf grund eines Fehlers nicht geladen werden.</h2>
+}
+else if (Item == null)
+{
+    <p><em>Lade...</em></p>
 }
 else
 {
+    <h3>@(CreationMode ? "Eintrag hinzufügen" : "Eintrag bearbeiten")</h3>
+
     <EditForm Model="@Item" OnValidSubmit="@Save">
         <DataAnnotationsValidator />
         <div asp-validation-summary="All" class="text-danger"></div>
@@ -24,14 +28,17 @@ else
                 <ValidationMessage For="@(() => Item.Name)" />
             </div>
         </div>
-        <div class="form-group row mb-1">
-            <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
+        @if (Datatype == EditDataType.CoreData)
+        {
+            <div class="form-group row mb-1">
+                <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
 
-            <div class="col-sm-9">
-                <InputText Class="form-control" @bind-Value="@Item.GenericName" />
-                <ValidationMessage For="@(() => Item.GenericName)" />
+                <div class="col-sm-9">
+                    <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).GenericName)" />
+                    <ValidationMessage For="@(() => (((CoreDataItem)Item).GenericName))" />
+                </div>
             </div>
-        </div>
+        }
         <div class="form-group row mb-1">
             <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
 
@@ -40,15 +47,18 @@ else
                 <ValidationMessage For="@(() => Item.Quantity)" />
             </div>
         </div>
-        <div class="form-group row mb-1">
-            <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
+        @if (Datatype == EditDataType.CoreData)
+        {
+            <div class="form-group row mb-1">
+                <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
 
-            <div class="col-sm-9">
-                <InputText Class="form-control" @bind-Value="@Item.Brands" />
-                <ValidationMessage For="@(() => Item.Brands)" />
+                <div class="col-sm-9">
+                    <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).Brands)" />
+                    <ValidationMessage For="@(() => ((CoreDataItem)Item).Brands)" />
+                </div>
             </div>
-        </div>
+        }
 
-        <button type="submit" class="btn btn-primary">Speichern</button>
+        <button type="submit" class="btn btn-primary">@(CreationMode ? "Hinzufügen" : "Ändern")</button>
     </EditForm>
 }

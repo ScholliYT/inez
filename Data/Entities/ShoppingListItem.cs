@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,8 +13,13 @@ namespace INEZ.Data.Entities
             CreationTimeStamp = DateTimeOffset.UtcNow;
         }
 
+        [Required(ErrorMessage = "{0} wird benötigt")]
         public string OwnerId { get; set; }
+
+        [Required(ErrorMessage = "{0} wird benötigt")]
         public DateTimeOffset CreationTimeStamp { get; set; }
-        public bool Checked { get; set; }
+
+        [Required(ErrorMessage = "{0} wird benötigt")]
+        public bool Checked { get; set; } = false;
     }
 }

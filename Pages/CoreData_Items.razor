@@ -131,7 +131,7 @@ else
 
     protected void AddNew()
     {
-        UriHelper.NavigateTo("/edititem");
+        UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.CoreData}");
     }
 
     protected async Task SearchClick()
@@ -175,7 +175,7 @@ else
 
     protected void EditItem(Guid id)
     {
-        UriHelper.NavigateTo("/edititem/" + id.ToString());
+        UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.CoreData}/{id}");
     }
 
     protected void ConfirmDelete(CoreDataItem item)

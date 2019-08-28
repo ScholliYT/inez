@@ -70,7 +70,6 @@ namespace INEZ.Pages
             }
         }
 
-
         private async Task<IdentityUser> GetCurrentUserAsync() => await UserManager.GetUserAsync(HTTPContextAccessor.HttpContext.User);
 
         private async Task LoadItems()
@@ -85,7 +84,7 @@ namespace INEZ.Pages
 
         protected void AddNew()
         {
-            UriHelper.NavigateTo("/edititem");
+            UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
         }
 
         protected async Task SearchClick()
@@ -120,7 +119,7 @@ namespace INEZ.Pages
 
         protected void EditItem(Guid id)
         {
-            UriHelper.NavigateTo("/edititem/" + id.ToString());
+            UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}/{id}");
         }
 
         protected void ConfirmDelete(ShoppingListItem item)
