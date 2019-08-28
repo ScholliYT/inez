@@ -1,15 +1,14 @@
 using System;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using INEZ.Areas.Identity;
 using INEZ.Data;
+using INEZ.Data.Services;
 
 namespace INEZ
 {
@@ -51,7 +50,8 @@ namespace INEZ
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             //services.AddScoped<AuthenticationStateProvider, RevalidatingAuthenticationStateProvider<IdentityUser>>();
             services.AddBlazoredModal();
-            services.AddScoped<ItemsService>();
+            services.AddScoped<CoreDataItemsService>();
+            services.AddScoped<ShoppingListItemsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

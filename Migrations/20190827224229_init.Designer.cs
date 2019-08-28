@@ -4,14 +4,16 @@ using INEZ.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace INEZ.Migrations
 {
     [DbContext(typeof(InezContext))]
-    partial class InezContextModelSnapshot : ModelSnapshot
+    [Migration("20190827224229_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +61,7 @@ namespace INEZ.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CoreDataItems");
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("INEZ.Data.Entities.ShoppingListItem", b =>
@@ -80,7 +82,6 @@ namespace INEZ.Migrations
                         .HasMaxLength(255);
 
                     b.Property<string>("OwnerId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Quantity")
