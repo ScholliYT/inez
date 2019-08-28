@@ -22,7 +22,7 @@ Die Webanwendung läuft derzeit auf der Infrastruktur von Microsoft Azure.
 
 #### Verwendete Azure Dienste:
 - SQL server
-- SQL database
+- SQL database (1 * User, 1 * Einkaufszettel Daten)
 - App Service plan
 - App Service
 - SignalR
