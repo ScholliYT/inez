@@ -17,9 +17,9 @@ namespace INEZ.Data.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<ShoppingListItem>> GetShoppingListItemsAsync(IdentityUser user)
+        public async Task<IEnumerable<ShoppingListItem>> GetShoppingListItemsAsync(string userId)
         {
-            return await _context.ShoppingListItems.Where(i => i.OwnerId == user.Id).OrderBy(i => i.Name).ToListAsync();
+            return await _context.ShoppingListItems.Where(i => i.OwnerId == userId).OrderBy(i => i.Name).ToListAsync();
         }
 
 

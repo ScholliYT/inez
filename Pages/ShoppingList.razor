@@ -1,5 +1,6 @@
 ﻿@page "/shoppinglist"
 @inherits INEZ.Pages.ShoppingListModel
+@using System.Security.Claims;
 
 <h3>Einkaufsliste </h3>
 
@@ -8,7 +9,7 @@
         <p><em>Bitte Melde dich an um die Einkaufsliste nutzen zu können.</em></p>
     </NotAuthorized>
     <Authorized>
-        @if (ShoppingListItems == null)
+        @if (SetCurrentUserId(context.User.FindFirstValue(ClaimTypes.NameIdentifier)) && ShoppingListItems == null)
         {
             <p><em>Lade...</em></p>
         }
@@ -25,7 +26,7 @@
                                 <input type="search" class="form-control" @bind-value="@SearchTerm" bind-Value:event="oninput" />
                                 <div class="input-group-append">
                                     <button class="btn btn-secondary" type="button" @onclick="@SearchClick">Suchen/Hinzufügen</button>
-                                    <button class="btn btn-danger" type="button" @onclick="@ClearClick">x</button>
+                                    <button class="btn btn-danger" type="button" @onclick="@ClearClick"><span class="oi oi-trash"/></button>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="@UseFuzzySearch" />
@@ -53,8 +54,8 @@
                                         <td>@shoppingListItem.Name</td>
                                         <td>
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-light" @onclick=@(() => EditItem(shoppingListItem.Id))>...</button>
-                                                <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(shoppingListItem))>x</button>
+                                                <button type="button" class="btn btn-light" @onclick=@(() => EditItem(shoppingListItem.Id))><span class="oi oi-pencil"/></button>
+                                                <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(shoppingListItem))><span class="oi oi-trash"/></button>
                                             </div>
                                         </td>
                                     </tr>

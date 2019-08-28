@@ -20,18 +20,13 @@ namespace INEZ.Pages
         [Inject] protected IUriHelper UriHelper { get; set; }
         [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
-        [Inject] protected IHttpContextAccessor HTTPContextAccessor { get; set; }
-        [Inject] protected UserManager<IdentityUser> UserManager { get; set; }
-
 
         [Parameter] public Guid Id { get; set; }
+        [Parameter] public int? Datatype { get; set; }
 
-        [Parameter] public EditDataType Datatype { get; set; }
-
+        private string currentUserId;
         protected bool LoadFailed { get; private set; }
-
         protected Item Item { get; private set; }
-
         protected bool CreationMode { get; private set; }
 
         protected override async Task OnParametersSetAsync()
@@ -40,19 +35,23 @@ namespace INEZ.Pages
             {
                 CreationMode = Id == default;
 
-                switch (Datatype)
+                if (!Datatype.HasValue)
+                {
+                    LoadFailed = true;
+                    return;
+                }
+
+                switch ((EditDataType)Datatype)
                 {
                     case EditDataType.CoreData:
                         Item = CreationMode ? new CoreDataItem() : await CoreDataItemsService.GetItemAsync(Id);
                         break;
                     case EditDataType.ShoppingList:
-
-
                         Item = CreationMode ? new ShoppingListItem() : await ShoppingListItemsService.GetItemAsync(Id);
                         break;
                     default:
                         LoadFailed = true;
-                        break;
+                        return;
                 }
             }
             catch (Exception)
@@ -61,11 +60,9 @@ namespace INEZ.Pages
             }
         }
 
-        private async Task<IdentityUser> GetCurrentUserAsync() => await UserManager.GetUserAsync(HTTPContextAccessor.HttpContext.User);
-
         protected async Task Save()
         {
-            switch (Datatype)
+            switch ((EditDataType)Datatype)
             {
                 case EditDataType.CoreData:
                     if (CreationMode)
@@ -77,13 +74,9 @@ namespace INEZ.Pages
                 case EditDataType.ShoppingList:
                     if (CreationMode)
                     {
-                        var user = await GetCurrentUserAsync();
-                        if (user != null)
-                        {
-                            ShoppingListItem shoppingListItem = (ShoppingListItem)Item;
-                            shoppingListItem.OwnerId = user.Id;
-                            await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
-                        }
+                        ShoppingListItem shoppingListItem = (ShoppingListItem)Item;
+                        shoppingListItem.CreationTimeStamp = DateTimeOffset.UtcNow;
+                        await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
                     }
                     else
                         await ShoppingListItemsService.SaveChangesAsync();
@@ -92,6 +85,28 @@ namespace INEZ.Pages
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Used to get the userId from Razor component because only there the HTTPContext is available
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <returns>true</returns>
+        protected bool SetCurrentUserId(string userid)
+        {
+            // prevent infinite loop
+            if (currentUserId != userid)
+            {
+                currentUserId = userid;
+
+                if ((EditDataType)Datatype == EditDataType.ShoppingList && CreationMode)
+                {
+                    ShoppingListItem shoppingListItem = (ShoppingListItem)Item;
+                    shoppingListItem.OwnerId = currentUserId;
+                }
+            }
+
+            return true;
         }
     }
 }
