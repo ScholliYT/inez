@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using INEZ.Data.Entities;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Blazored.Modal.Services;
 using INEZ.Classes;
 using Blazored.Modal;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using INEZ.Data.Services;
-using System.Security.Claims;
 using System.Linq;
 
 namespace INEZ.Pages
@@ -24,14 +20,28 @@ namespace INEZ.Pages
 
         public List<ShoppingListItem> ShoppingListItems { get; set; }
         protected List<CoreDataItem> AvailableItems { get; set; } = new List<CoreDataItem>();
-        protected CoreDataItem SelectedItem;
+
+        private CoreDataItem _selectedItem;
+        protected CoreDataItem SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                _selectedItem = value;
+                if (_selectedItem != null)
+                {
+                    AddCoreDataItemAsync(SelectedItem).ConfigureAwait(false);
+                    // TODO: clear SelectedItem
+                }
+            }
+        }
 
         private string currentUserId;
-        private List<CoreDataItem> lastSearchResults;
 
         #region Display / Layout
-        public string QuantitiyColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
+        public string QuantityColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
         public string NameColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -48,28 +58,22 @@ namespace INEZ.Pages
             if (currentUserId != null)
             {
                 ShoppingListItems.AddRange(await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId));
+                ShoppingListItems = ShoppingListItems.OrderByDescending(i => i.CreationTimeStamp).ToList();
             }
 
             StateHasChanged();
         }
 
-        protected async void AddNewItemAsync()
+        protected void AddNewItemManual()
         {
-            if (lastSearchResults != null && lastSearchResults.Count == 1)
-            {
-                CoreDataItem coreDataItem = lastSearchResults.First();
-                await AddCoreDataItemAsync(coreDataItem);
-            }
-            else if(SelectedItem != null)
-            {
-                await AddCoreDataItemAsync(SelectedItem);
-                SelectedItem = null;
-                StateHasChanged();
-            }
-            else
-            {
-                UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
-            }
+            UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
+        }
+
+        protected async void UpdateCheckedState(ShoppingListItem item, UIChangeEventArgs args)
+        {
+            item.Checked = (bool)args.Value;
+            await ShoppingListItemsService.SaveChangesAsync();
+            StateHasChanged();
         }
 
         private async Task AddCoreDataItemAsync(CoreDataItem coreDataItem)
@@ -126,11 +130,9 @@ namespace INEZ.Pages
             return true;
         }
 
-
         protected async Task<List<CoreDataItem>> GetItem(string searchText)
         {
             List<CoreDataItem> items = await Task.FromResult(FuzzyItemMatcher<CoreDataItem>.FilterItems(AvailableItems, searchText, maxcount: 7));
-            lastSearchResults = items;
             return items;
         }
     }

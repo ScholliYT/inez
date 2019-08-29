@@ -4,8 +4,6 @@
 
 <h3>Einkaufsliste </h3>
 
-
-
 <AuthorizeView>
     <NotAuthorized>
         <p><em>Bitte Melde dich an um die Einkaufsliste nutzen zu können.</em></p>
@@ -26,7 +24,7 @@
                                                Debounce="200"
                                                Placeholder="Stammdaten durchsuchen...">
                                 <SelectedTemplate Context="item">
-                                    @item.Name
+                                    @item.Quantity    @item.Name
                                 </SelectedTemplate>
                                 <ResultTemplate Context="item">
                                     @item.Quantity    @item.Name
@@ -36,7 +34,7 @@
                                 </NotFoundTemplate>
                             </BlazoredTypeahead>
                             <div class="col-md-3">
-                                <button class="btn btn-primary" type="button" @onclick=@AddNewItemAsync>Hinzufügen</button>
+                                <button class="btn btn-primary" type="button" @onclick=@AddNewItemManual>Manuell hinzufügen</button>
                             </div>
                         </div>
                     </div>
@@ -46,8 +44,9 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th style="width: 20%">@QuantitiyColumnName</th>
-                                    <th style="width: 70%">@NameColumnName</th>
+                                    <th style="width: 5%">Gekauft</th>
+                                    <th style="width: 20%">@QuantityColumnName</th>
+                                    <th style="width: 65%">@NameColumnName</th>
                                     <th style="width: 10%"></th> @*for buttons*@
                                 </tr>
                             </thead>
@@ -55,6 +54,19 @@
                                 @foreach (var shoppingListItem in ShoppingListItems)
                                 {
                                     <tr>
+                                        <td>
+                                            <div class="form-check form-check-inline">
+                                                @if (shoppingListItem.Checked)
+                                                {
+                                                    // draw checkbox thats allready checked
+                                                    <input type="checkbox" class="form-check-input" id="itemchecked" checked @onchange=@(newState => UpdateCheckedState(shoppingListItem, newState)) />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="form-check-input" id="itemchecked" @onchange=@(newState => UpdateCheckedState(shoppingListItem, newState)) />
+                                                }
+                                            </div>
+                                        </td>
                                         <td>@shoppingListItem.Quantity</td>
                                         <td>@shoppingListItem.Name</td>
                                         <td>
