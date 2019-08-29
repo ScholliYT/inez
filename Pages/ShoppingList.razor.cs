@@ -8,6 +8,7 @@ using INEZ.Classes;
 using Blazored.Modal;
 using INEZ.Data.Services;
 using System.Linq;
+using System.Security.Claims;
 
 namespace INEZ.Pages
 {
@@ -17,6 +18,7 @@ namespace INEZ.Pages
         [Inject] protected IUriHelper UriHelper { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
         [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
+        [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
         public List<ShoppingListItem> ShoppingListItems { get; set; }
         protected List<CoreDataItem> AvailableItems { get; set; } = new List<CoreDataItem>();
@@ -36,8 +38,6 @@ namespace INEZ.Pages
             }
         }
 
-        private string currentUserId;
-
         #region Display / Layout
         public string QuantityColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
         public string NameColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
@@ -53,12 +53,18 @@ namespace INEZ.Pages
 
         private async Task LoadShoppingListItems()
         {
-            ShoppingListItems = new List<ShoppingListItem>();
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
 
-            if (currentUserId != null)
+            if (user.Identity.IsAuthenticated)
             {
-                ShoppingListItems.AddRange(await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId));
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+                ShoppingListItems = new List<ShoppingListItem>(await ShoppingListItemsService.GetShoppingListItemsAsync(userId));
                 ShoppingListItems = ShoppingListItems.OrderByDescending(i => i.CreationTimeStamp).ToList();
+            }
+            else
+            {
+                ShoppingListItems = null;
             }
 
             StateHasChanged();
@@ -78,14 +84,22 @@ namespace INEZ.Pages
 
         private async Task AddCoreDataItemAsync(CoreDataItem coreDataItem)
         {
-            ShoppingListItem shoppingListItem = new ShoppingListItem()
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated)
             {
-                Name = coreDataItem.Name,
-                Quantity = coreDataItem.Quantity,
-                OwnerId = currentUserId,
-            };
-            await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
-            await LoadShoppingListItems();
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                ShoppingListItem shoppingListItem = new ShoppingListItem()
+                {
+                    Name = coreDataItem.Name,
+                    Quantity = coreDataItem.Quantity,
+                    OwnerId = userId,
+                };
+                await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+                await LoadShoppingListItems();
+            }
         }
 
         protected void EditItem(Guid id)
@@ -111,23 +125,6 @@ namespace INEZ.Pages
                 await ShoppingListItemsService.DeleteItem((ShoppingListItem)result.Data);
                 await LoadShoppingListItems();
             }
-        }
-
-        /// <summary>
-        /// Used to get the userId from Razor component because only there the HTTPContext is available
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <returns>true</returns>
-        protected bool SetCurrentUserId(string userid)
-        {
-            // prevent infinite loop
-            if (currentUserId != userid)
-            {
-                currentUserId = userid;
-                LoadShoppingListItems().ConfigureAwait(false);
-            }
-
-            return true;
         }
 
         protected async Task<List<CoreDataItem>> GetItem(string searchText)

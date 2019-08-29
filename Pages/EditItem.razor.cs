@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using INEZ.Data;
 using INEZ.Data.Entities;
@@ -20,11 +21,11 @@ namespace INEZ.Pages
         [Inject] protected IUriHelper UriHelper { get; set; }
         [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
+        [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
         [Parameter] public Guid Id { get; set; }
         [Parameter] public int? Datatype { get; set; }
 
-        private string currentUserId;
         protected bool LoadFailed { get; private set; }
         protected Item Item { get; private set; }
         protected bool CreationMode { get; private set; }
@@ -47,7 +48,12 @@ namespace INEZ.Pages
                         Item = CreationMode ? new CoreDataItem() : await CoreDataItemsService.GetItemAsync(Id);
                         break;
                     case EditDataType.ShoppingList:
-                        Item = CreationMode ? new ShoppingListItem() : await ShoppingListItemsService.GetItemAsync(Id);
+                        Item = CreationMode ? new ShoppingListItem()
+                        {
+                            // We need to set the ownerId here so the model can be valid before the save button is pressed
+                            OwnerId = await GetUserId()
+
+                        } : await ShoppingListItemsService.GetItemAsync(Id);
                         break;
                     default:
                         LoadFailed = true;
@@ -87,26 +93,16 @@ namespace INEZ.Pages
             }
         }
 
-        /// <summary>
-        /// Used to get the userId from Razor component because only there the HTTPContext is available
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <returns>true</returns>
-        protected bool SetCurrentUserId(string userid)
+        private async Task<string> GetUserId()
         {
-            // prevent infinite loop
-            if (currentUserId != userid)
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.Identity.IsAuthenticated)
             {
-                currentUserId = userid;
-
-                if ((EditDataType)Datatype == EditDataType.ShoppingList && CreationMode)
-                {
-                    ShoppingListItem shoppingListItem = (ShoppingListItem)Item;
-                    shoppingListItem.OwnerId = currentUserId;
-                }
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+                return userId;
             }
-
-            return true;
+            return null;
         }
     }
 }

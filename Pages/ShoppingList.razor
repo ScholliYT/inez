@@ -9,7 +9,7 @@
         <p><em>Bitte Melde dich an um die Einkaufsliste nutzen zu können.</em></p>
     </NotAuthorized>
     <Authorized>
-        @if (SetCurrentUserId(context.User.FindFirstValue(ClaimTypes.NameIdentifier)) && ShoppingListItems == null)
+        @if (ShoppingListItems == null)
         {
             <p><em>Lade...</em></p>
         }
