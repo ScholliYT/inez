@@ -7,6 +7,7 @@ using Blazored.Modal.Services;
 using INEZ.Classes;
 using Blazored.Modal;
 using INEZ.Data.Services;
+using System.Linq;
 
 namespace INEZ.Pages
 {
@@ -57,6 +58,7 @@ namespace INEZ.Pages
             if (currentUserId != null)
             {
                 ShoppingListItems.AddRange(await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId));
+                ShoppingListItems = ShoppingListItems.OrderByDescending(i => i.CreationTimeStamp).ToList();
             }
 
             StateHasChanged();
