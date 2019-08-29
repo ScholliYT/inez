@@ -39,7 +39,7 @@ namespace INEZ.Pages
         private string currentUserId;
 
         #region Display / Layout
-        public string QuantitiyColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
+        public string QuantityColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
         public string NameColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
 
         #endregion
@@ -67,6 +67,13 @@ namespace INEZ.Pages
         protected void AddNewItemManual()
         {
             UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
+        }
+
+        protected async void UpdateCheckedState(ShoppingListItem item, UIChangeEventArgs args)
+        {
+            item.Checked = (bool)args.Value;
+            await ShoppingListItemsService.SaveChangesAsync();
+            StateHasChanged();
         }
 
         private async Task AddCoreDataItemAsync(CoreDataItem coreDataItem)
