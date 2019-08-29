@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using INEZ.Data.Services;
 using System.Security.Claims;
-
+using System.Linq;
 
 namespace INEZ.Pages
 {
@@ -20,98 +20,68 @@ namespace INEZ.Pages
         [Inject] protected IModalService Modal { get; set; }
         [Inject] protected IUriHelper UriHelper { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
+        [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
 
-        public IEnumerable<ShoppingListItem> ShoppingListItems { get; set; }
+        public List<ShoppingListItem> ShoppingListItems { get; set; }
+        protected List<CoreDataItem> AvailableItems { get; set; } = new List<CoreDataItem>();
+        protected CoreDataItem SelectedItem;
 
         private string currentUserId;
+        private List<CoreDataItem> lastSearchResults;
+
+        #region Display / Layout
+        public string QuantitiyColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
+        public string NameColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+        #endregion
 
         protected override async Task OnInitializedAsync()
         {
-            await LoadItems();
+            await LoadShoppingListItems();
+
+            AvailableItems.AddRange(await CoreDataItemsService.GetItemsAsync());
         }
 
-        public string QuantitiyColumnName
+        private async Task LoadShoppingListItems()
         {
-            get
-            {
-                return DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
-            }
-        }
+            ShoppingListItems = new List<ShoppingListItem>();
 
-        public string NameColumnName
-        {
-            get
-            {
-                return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
-            }
-        }
-
-        private string _searchTerm = "";
-        [Parameter]
-        public string SearchTerm
-        {
-            get { return _searchTerm; }
-            set
-            {
-                _searchTerm = value;
-                SearchClick().ConfigureAwait(false);
-            }
-        }
-
-        private bool _UseFuzzySearch;
-
-        public bool UseFuzzySearch
-        {
-            get { return _UseFuzzySearch; }
-            set
-            {
-                _UseFuzzySearch = value;
-                SearchClick().ConfigureAwait(false);
-            }
-        }
-
-        private async Task LoadItems()
-        {
             if (currentUserId != null)
             {
-                ShoppingListItems = await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId);
+                ShoppingListItems.AddRange(await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId));
             }
+
             StateHasChanged();
         }
 
-        protected void AddNew()
+        protected async void AddNewItemAsync()
         {
-            UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
-        }
-
-        protected async Task SearchClick()
-        {
-            if (string.IsNullOrEmpty(SearchTerm))
+            if (lastSearchResults != null && lastSearchResults.Count == 1)
             {
-                await LoadItems();
-                return;
+                CoreDataItem coreDataItem = lastSearchResults.First();
+                await AddCoreDataItemAsync(coreDataItem);
             }
-
-            await Search(SearchTerm);
-        }
-
-        private async Task Search(string term)
-        {
-            if (UseFuzzySearch)
+            else if(SelectedItem != null)
             {
-                //ShoppingListItems = await ItemsService.FuzzySearchItemsAsync(term);
+                await AddCoreDataItemAsync(SelectedItem);
+                SelectedItem = null;
+                StateHasChanged();
             }
             else
             {
-                //ShoppingListItems = await ItemsService.SearchItemsAsync(term);
+                UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
             }
-            StateHasChanged();
         }
 
-        protected async Task ClearClick()
+        private async Task AddCoreDataItemAsync(CoreDataItem coreDataItem)
         {
-            SearchTerm = "";
-            await SearchClick();
+            ShoppingListItem shoppingListItem = new ShoppingListItem()
+            {
+                Name = coreDataItem.Name,
+                Quantity = coreDataItem.Quantity,
+                OwnerId = currentUserId,
+            };
+            await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+            await LoadShoppingListItems();
         }
 
         protected void EditItem(Guid id)
@@ -135,7 +105,7 @@ namespace INEZ.Pages
             if (!result.Cancelled)
             {
                 await ShoppingListItemsService.DeleteItem((ShoppingListItem)result.Data);
-                await LoadItems();
+                await LoadShoppingListItems();
             }
         }
 
@@ -150,10 +120,18 @@ namespace INEZ.Pages
             if (currentUserId != userid)
             {
                 currentUserId = userid;
-                LoadItems().ConfigureAwait(false);
+                LoadShoppingListItems().ConfigureAwait(false);
             }
 
             return true;
+        }
+
+
+        protected async Task<List<CoreDataItem>> GetItem(string searchText)
+        {
+            List<CoreDataItem> items = await Task.FromResult(FuzzyItemMatcher<CoreDataItem>.FilterItems(AvailableItems, searchText, maxcount: 7));
+            lastSearchResults = items;
+            return items;
         }
     }
 }

@@ -31,30 +31,9 @@ namespace INEZ.Data.Services
 
         public async Task<IEnumerable<CoreDataItem>> SearchItemsAsync(string searchterm)
         {
-            return await _context.CoreDataItems.Where(i => i.Name.Contains(searchterm))
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<CoreDataItem>> FuzzySearchItemsAsync(string searchterm)
-        {
-            // apply lowercase filter
-            //Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(searchterm.ToLower());
-            //return (await GetItemsAsync()).Where(item => IsMatch(searchterm.ToLower(), lev, item.Name.ToLower()));
-
             var items = await GetItemsAsync();
 
-            IEnumerable<CoreDataItem> result = items.Select(item =>
-            new
-            {
-                // Create new anonymous object to hold score along with the item itself
-                Item = item,
-                Score = FuzzyMatcher.FuzzyMatch(item.Name, searchterm)
-            })
-            .OrderByDescending(i => i.Score)
-            .Take(25)
-            .Select(i => i.Item);
-
-            return result;
+            return FuzzyItemMatcher<CoreDataItem>.FilterItems(items, searchterm);
         }
 
         public async Task<CoreDataItem> CreateItemAsync(CoreDataItem item)
@@ -73,21 +52,6 @@ namespace INEZ.Data.Services
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
-        }
-
-        private bool IsMatch(string compSource, Fastenshtein.Levenshtein compSourceLev, string compTo)
-        {
-            return compSource.Equals(compTo) ||
-                   compSource.Contains(compTo) ||
-                   compTo.Contains(compSource) ||
-                   1 - LevenshteinDistanceNormalized(compSourceLev, compSource.Length, compTo) > 0.8d;
-        }
-
-        private double LevenshteinDistanceNormalized(Fastenshtein.Levenshtein lev, int lenLev, string str)
-        {
-            int maxlen = Math.Max(lenLev, str.Length);
-            int distance = lev.DistanceFrom(str);
-            return (double)distance / maxlen;
         }
     }
 }
