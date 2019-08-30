@@ -18,9 +18,13 @@ else
 {
     <div class="container">
         <div class="row" style="margin-bottom: 10px">
-            <div class="col-md-3">
-                <button class="btn btn-primary" type="button" @onclick=AddNew>Hinzufügen</button>
-            </div>
+            <AuthorizeView Context="authorizeview_context">
+                <AuthorizeView Roles="Admin">
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" type="button" @onclick=AddNew>Hinzufügen</button>
+                    </div>
+                </AuthorizeView>
+            </AuthorizeView>
             <div class="col">
                 <form class="form-grid">
                     <div class="input-group mb-auto">
@@ -28,10 +32,6 @@ else
                         <div class="input-group-append">
                             <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen/Hinzufügen</button>
                             <button class="btn btn-danger" type="button" @onclick="ClearClick"><span class="oi oi-trash" /></button>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="usefuzzysearch" @bind-value="UseFuzzySearch" />
-                            <label class="form-check-label" for="usefuzzysearch">Fuzzy Suche</label>
                         </div>
                     </div>
                 </form>
@@ -48,19 +48,35 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in _items)
-                        {
-                            <tr>
-                                <td>@item.Quantity</td>
-                                <td>@item.Name</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))><span class="oi oi-pencil" /></button>
-                                        <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))><span class="oi oi-trash" /></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
+                        <AuthorizeView Context="authorizeview_context">
+                            <AuthorizeView Roles="Admin">
+                                @foreach (var item in _items)
+                                {
+                                    <tr>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Name</td>
+                                        <td>
+
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))><span class="oi oi-pencil" /></button>
+                                                <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))><span class="oi oi-trash" /></button>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                }
+                            </AuthorizeView>
+                            <AuthorizeView>
+                                @foreach (var item in _items)
+                                {
+                                    <tr>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Name</td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            </AuthorizeView>
+                        </AuthorizeView>
                     </tbody>
                 </table>
             </div>
@@ -110,19 +126,6 @@ else
         }
     }
 
-    private bool _UseFuzzySearch;
-
-    public bool UseFuzzySearch
-    {
-        get { return _UseFuzzySearch; }
-        set
-        {
-            _UseFuzzySearch = value;
-            SearchClick().ConfigureAwait(false);
-        }
-    }
-
-
     private async Task LoadItems()
     {
         _items = await ItemsService.GetItemsAsync();
@@ -147,23 +150,7 @@ else
 
     private async Task Search(string term)
     {
-        if (UseFuzzySearch)
-        {
-            try
-            {
-
-                _items = await ItemsService.FuzzySearchItemsAsync(term);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-        }
-        else
-        {
-            _items = await ItemsService.SearchItemsAsync(term);
-        }
+        _items = await ItemsService.SearchItemsAsync(term);
         StateHasChanged();
     }
 

@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using INEZ.Data;
 using INEZ.Data.Services;
+using System.Threading.Tasks;
+using INEZ.Areas.Identity;
 
 namespace INEZ
 {
@@ -40,13 +42,15 @@ namespace INEZ
                 services.AddDbContext<InezContext>(options =>
                     options.UseSqlServer(
                         Configuration.GetConnectionString("DefaultInezDbConnection")));
-               
+
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(
                         Configuration.GetConnectionString("DefaultInezUserDbConnection")));
             }
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddDefaultTokenProviders()
+                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             //services.AddScoped<AuthenticationStateProvider, RevalidatingAuthenticationStateProvider<IdentityUser>>();
             services.AddBlazoredModal();
@@ -55,10 +59,8 @@ namespace INEZ
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
-            // Automatically perform database migration
-            MigrateDatabase(app);
 
             if (env.IsDevelopment())
             {
@@ -77,8 +79,12 @@ namespace INEZ
 
             app.UseRouting();
 
+            // Automatically perform database migration
+            MigrateDatabase(app);
+
             app.UseAuthentication();
             app.UseAuthorization();
+            CreateRoles(serviceProvider).GetAwaiter().GetResult();
 
             app.UseEndpoints(endpoints =>
             {
@@ -102,6 +108,42 @@ namespace INEZ
                     context.Database.Migrate();
                 }
             }
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            // initializing custom roles 
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            string[] roleNames = { "Admin", "Member" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    // create the roles and seed them to the database
+                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            //// Here you could create a super user who will maintain the web app
+            //var poweruser = new ApplicationUser
+            //{
+            //    UserName = Configuration["AppSettings:UserName"],
+            //    Email = Configuration["AppSettings:UserEmail"],
+            //};
+            ////Ensure you have these values in your appsettings.json file
+            //string userPWD = Configuration["AppSettings:UserPassword"];
+
+            //var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+            //if (createPowerUser.Succeeded)
+            //{
+            //    //here we tie the new user to the role
+            //    var result = await UserManager.AddToRoleAsync(poweruser, "Admin");
+
+            //}
         }
     }
 }

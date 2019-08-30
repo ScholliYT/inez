@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using INEZ.Data.Entities;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Blazored.Modal.Services;
 using INEZ.Classes;
 using Blazored.Modal;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using INEZ.Data.Services;
+using System.Linq;
 using System.Security.Claims;
-
 
 namespace INEZ.Pages
 {
@@ -20,98 +17,89 @@ namespace INEZ.Pages
         [Inject] protected IModalService Modal { get; set; }
         [Inject] protected IUriHelper UriHelper { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
+        [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
+        [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
-        public IEnumerable<ShoppingListItem> ShoppingListItems { get; set; }
+        public List<ShoppingListItem> ShoppingListItems { get; set; }
+        protected List<CoreDataItem> AvailableItems { get; set; } = new List<CoreDataItem>();
 
-        private string currentUserId;
+        private CoreDataItem _selectedItem;
+        protected CoreDataItem SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                _selectedItem = value;
+                if (_selectedItem != null)
+                {
+                    AddCoreDataItemAsync(SelectedItem).ConfigureAwait(false);
+                    // TODO: clear SelectedItem
+                }
+            }
+        }
+
+        #region Display / Layout
+        public string QuantityColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
+        public string NameColumnName => DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+
+        #endregion
 
         protected override async Task OnInitializedAsync()
         {
-            await LoadItems();
+            await LoadShoppingListItems();
+
+            AvailableItems.AddRange(await CoreDataItemsService.GetItemsAsync());
         }
 
-        public string QuantitiyColumnName
+        private async Task LoadShoppingListItems()
         {
-            get
-            {
-                return DisplayHelper.GetDisplayName<Item>(i => i.Quantity) ?? nameof(Item.Quantity);
-            }
-        }
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
 
-        public string NameColumnName
-        {
-            get
+            if (user.Identity.IsAuthenticated)
             {
-                return DisplayHelper.GetDisplayName<Item>(i => i.Name) ?? nameof(Item.Name);
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+                ShoppingListItems = new List<ShoppingListItem>(await ShoppingListItemsService.GetShoppingListItemsAsync(userId));
+                ShoppingListItems = ShoppingListItems.OrderByDescending(i => i.CreationTimeStamp).ToList();
             }
-        }
-
-        private string _searchTerm = "";
-        [Parameter]
-        public string SearchTerm
-        {
-            get { return _searchTerm; }
-            set
+            else
             {
-                _searchTerm = value;
-                SearchClick().ConfigureAwait(false);
+                ShoppingListItems = null;
             }
-        }
 
-        private bool _UseFuzzySearch;
-
-        public bool UseFuzzySearch
-        {
-            get { return _UseFuzzySearch; }
-            set
-            {
-                _UseFuzzySearch = value;
-                SearchClick().ConfigureAwait(false);
-            }
-        }
-
-        private async Task LoadItems()
-        {
-            if (currentUserId != null)
-            {
-                ShoppingListItems = await ShoppingListItemsService.GetShoppingListItemsAsync(currentUserId);
-            }
             StateHasChanged();
         }
 
-        protected void AddNew()
+        protected void AddNewItemManual()
         {
             UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
         }
 
-        protected async Task SearchClick()
+        protected async void UpdateCheckedState(ShoppingListItem item, UIChangeEventArgs args)
         {
-            if (string.IsNullOrEmpty(SearchTerm))
-            {
-                await LoadItems();
-                return;
-            }
-
-            await Search(SearchTerm);
-        }
-
-        private async Task Search(string term)
-        {
-            if (UseFuzzySearch)
-            {
-                //ShoppingListItems = await ItemsService.FuzzySearchItemsAsync(term);
-            }
-            else
-            {
-                //ShoppingListItems = await ItemsService.SearchItemsAsync(term);
-            }
+            item.Checked = (bool)args.Value;
+            await ShoppingListItemsService.SaveChangesAsync();
             StateHasChanged();
         }
 
-        protected async Task ClearClick()
+        private async Task AddCoreDataItemAsync(CoreDataItem coreDataItem)
         {
-            SearchTerm = "";
-            await SearchClick();
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated)
+            {
+                string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                ShoppingListItem shoppingListItem = new ShoppingListItem()
+                {
+                    Name = coreDataItem.Name,
+                    Quantity = coreDataItem.Quantity,
+                    OwnerId = userId,
+                };
+                await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+                await LoadShoppingListItems();
+            }
         }
 
         protected void EditItem(Guid id)
@@ -135,25 +123,14 @@ namespace INEZ.Pages
             if (!result.Cancelled)
             {
                 await ShoppingListItemsService.DeleteItem((ShoppingListItem)result.Data);
-                await LoadItems();
+                await LoadShoppingListItems();
             }
         }
 
-        /// <summary>
-        /// Used to get the userId from Razor component because only there the HTTPContext is available
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <returns>true</returns>
-        protected bool SetCurrentUserId(string userid)
+        protected async Task<List<CoreDataItem>> GetItem(string searchText)
         {
-            // prevent infinite loop
-            if (currentUserId != userid)
-            {
-                currentUserId = userid;
-                LoadItems().ConfigureAwait(false);
-            }
-
-            return true;
+            List<CoreDataItem> items = await Task.FromResult(FuzzyItemMatcher<CoreDataItem>.FilterItems(AvailableItems, searchText, maxcount: 7));
+            return items;
         }
     }
 }
