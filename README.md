@@ -28,3 +28,9 @@ Die Webanwendung läuft derzeit auf der Infrastruktur von Microsoft Azure.
 - SignalR
 
 Zudem wird eine Azure DevOps Pipeline verwendet um automatisch änderungen am master branch auf die Webanwendung zu übertragen.
+
+
+## Datenquellen
+
+#### Produktdaten
+Die Daten wurden am 26.08.2019 von: https://world.openfoodfacts.org/ bezogen. Gefiltert nach "stores" = "edeka" und weitergehend manuell aufbereitet. 
