@@ -18,19 +18,19 @@ else
 {
     <div class="container">
         <div class="row" style="margin-bottom: 10px">
-            <AuthorizeView Context="authorizeview_context">
-                <AuthorizeView Roles="Admin">
+            <AuthorizeView Context="authorizeview_context" Roles="Admin">
+                <Authorized >
                     <div class="col-md-3">
                         <button class="btn btn-primary" type="button" @onclick=AddNew>Hinzufügen</button>
                     </div>
-                </AuthorizeView>
+                </Authorized>
             </AuthorizeView>
             <div class="col">
                 <form class="form-grid">
                     <div class="input-group mb-auto">
                         <input type="search" class="form-control" @bind-value="this.SearchTerm" @bind-value:event="oninput" />
                         <div class="input-group-append">
-                            <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen/Hinzufügen</button>
+                            <button class="btn btn-secondary" type="button" @onclick="SearchClick">Suchen</button>
                             <button class="btn btn-danger" type="button" @onclick="ClearClick"><span class="oi oi-trash" /></button>
                         </div>
                     </div>
@@ -48,8 +48,8 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        <AuthorizeView Context="authorizeview_context">
-                            <AuthorizeView Roles="Admin">
+                        <AuthorizeView Context="authorizeview_context" Roles="Admin">
+                            <Authorized>
                                 @foreach (var item in _items)
                                 {
                                     <tr>
@@ -65,8 +65,8 @@ else
                                         </td>
                                     </tr>
                                 }
-                            </AuthorizeView>
-                            <AuthorizeView>
+                            </Authorized>
+                            <NotAuthorized>
                                 @foreach (var item in _items)
                                 {
                                     <tr>
@@ -75,7 +75,7 @@ else
                                         <td></td>
                                     </tr>
                                 }
-                            </AuthorizeView>
+                            </NotAuthorized>
                         </AuthorizeView>
                     </tbody>
                 </table>
