@@ -12,7 +12,7 @@ Die Webanwendung läuft derzeit in der Azure Cloud: https://inez-app.azurewebsit
   - "Eier" -> "10 Eier"
   - "Schokolade" -> "100g Schokolade"
 - Accountsystem
-- Einkaufslisten für jeden Benutzer
+- Einkaufsliste für jeden Benutzer
 - Abhaken von Einträgen auf der Einkaufsliste
 
 
