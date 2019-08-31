@@ -7,11 +7,11 @@ namespace INEZ.Classes
 {
     public class Unit
     {
-        public static readonly Unit Grams       = new Unit("Gramm", "g", 0, new Dictionary<Unit, double>
+        public static readonly Unit Grams = new Unit("Gramm", "g", 0, new Dictionary<Unit, double>
         {
             { Kilograms, 1000 },
         });
-        public static readonly Unit Kilograms   = new Unit("Kilogramm", "kg", 1, new Dictionary<Unit, double>
+        public static readonly Unit Kilograms = new Unit("Kilogramm", "kg", 1, new Dictionary<Unit, double>
         {
             { Grams, 0.001 },
         });
@@ -19,12 +19,14 @@ namespace INEZ.Classes
         {
             { Liters, 1000 },
         });
-        public static readonly Unit Liters      = new Unit("Liter", "l", 1, new Dictionary<Unit, double>
+        public static readonly Unit Liters = new Unit("Liter", "l", 1, new Dictionary<Unit, double>
         {
             { Milliliters, 0.001 },
         });
         public static readonly Unit Pieces = new Unit("Stück", "Stk.", 0, new Dictionary<Unit, double>
         { });
+
+        public static readonly List<Unit> List = new List<Unit> { Grams, Kilograms, Milliliters, Liters, Pieces };
 
         public string Name { get; private set; }
         public string Abbreviation { get; private set; }
@@ -37,6 +39,15 @@ namespace INEZ.Classes
             this.Abbreviation = abbreviation;
             this.Index = index;
             this.ConvertableTo = convertableTo;
+        }
+
+        public static Unit GetUnitByAbbreviation(string abbreviation)
+        {
+            foreach (Unit unit in List) {
+                if (unit.Abbreviation == abbreviation) return unit;
+            }
+
+            return null;
         }
     }
 }
