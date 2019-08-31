@@ -23,7 +23,7 @@ namespace INEZ.Classes
         {
             { Milliliters, 0.001 },
         });
-        public static readonly Unit Pieces = new Unit("Stück", "Stk.", 0, new Dictionary<Unit, double>
+        public static readonly Unit Pieces = new Unit("Stück", "Stück", 0, new Dictionary<Unit, double>
         { });
 
         public static readonly List<Unit> List = new List<Unit> { Grams, Kilograms, Milliliters, Liters, Pieces };
