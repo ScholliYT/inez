@@ -91,13 +91,30 @@ namespace INEZ.Pages
             {
                 string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                ShoppingListItem shoppingListItem = new ShoppingListItem()
+                ShoppingListItem itemOnList = await ShoppingListItemsService.GetItemByNameAsync(userId, coreDataItem.Name);
+
+                // check if items could be merged
+                if (itemOnList != null && (ValueUnit.TryParse(itemOnList.Quantity, out ValueUnit onlistValue) && ValueUnit.TryParse(coreDataItem.Quantity, out ValueUnit coreDataValue)))
                 {
-                    Name = coreDataItem.Name,
-                    Quantity = coreDataItem.Quantity,
-                    OwnerId = userId,
-                };
-                await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+                    // merge items
+                    ValueUnit newValueUnit = ValueUnit.Add(onlistValue, coreDataValue);
+
+                    itemOnList.Quantity = newValueUnit.ToString();
+
+                    await ShoppingListItemsService.SaveChangesAsync();
+                }
+                else
+                {
+                    // create new item
+                    ShoppingListItem shoppingListItem = new ShoppingListItem()
+                    {
+                        Name = coreDataItem.Name,
+                        Quantity = coreDataItem.Quantity,
+                        OwnerId = userId,
+                    };
+                    await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+                }
+
                 await LoadShoppingListItems();
             }
         }

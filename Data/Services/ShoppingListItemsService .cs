@@ -28,6 +28,11 @@ namespace INEZ.Data.Services
             return await _context.ShoppingListItems.FirstOrDefaultAsync(i => i.Id == id);
         }
 
+        public async Task<ShoppingListItem> GetItemByNameAsync(string userid, string name)
+        {
+            return await _context.ShoppingListItems.Where(i => i.OwnerId == userid).FirstOrDefaultAsync(i => i.Name == name);
+        }
+
         public async Task CreateItemAsync(ShoppingListItem item)
         {
             _context.ShoppingListItems.Add(item);
