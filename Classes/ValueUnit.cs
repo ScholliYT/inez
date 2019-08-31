@@ -41,7 +41,7 @@ namespace INEZ.Classes
                 if (value.Contains(",")) Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
                 else Thread.CurrentThread.CurrentCulture = new CultureInfo("en-EN");
                 
-                if (Double.TryParse(value, out parsedValue))
+                if (double.TryParse(value, out parsedValue))
                 {
                     output = new ValueUnit(parsedValue, Unit.GetUnitByAbbreviation(unit));
                     return true;
