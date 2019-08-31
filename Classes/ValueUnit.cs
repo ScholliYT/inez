@@ -10,7 +10,7 @@ namespace INEZ.Classes
 {
     public class ValueUnit
     {
-        private static readonly Regex parsingRegex = new Regex(@"([0-9]*([,.][0-9]*)*) *(g|kg|ml|l|Stück|Stk.|Stck.).*", RegexOptions.IgnoreCase);
+        private static readonly Regex parsingRegex = new Regex(@"([0-9]*([,.][0-9]*)*) *(g|kg|ml|l|Stück).*", RegexOptions.IgnoreCase);
         
         public double Value { get; set; }
         public Unit Unit { get; set; }
