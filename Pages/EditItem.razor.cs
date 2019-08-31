@@ -82,7 +82,7 @@ namespace INEZ.Pages
                     {
                         ShoppingListItem shoppingListItem = (ShoppingListItem)Item;
                         shoppingListItem.CreationTimeStamp = DateTimeOffset.UtcNow;
-                        await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+                        await ShoppingListItemsService.CreateOrMergeItemAsync(shoppingListItem);
                     }
                     else
                         await ShoppingListItemsService.SaveChangesAsync();

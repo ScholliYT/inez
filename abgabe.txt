@@ -1,0 +1,19 @@
+Abgabe-Link:
+Wir haben den Code in GitHub gespeichert: https://github.com/ScholliYT/inez.
+Die Version des Codes, welchen wir einreichen möchten ist mit einem Tag markiert: https://github.com/ScholliYT/inez/releases/tag/abgabe
+
+Die fertige Version ist unter: https://inez-app.azurewebsites.net/ zu finden.
+
+Anmerkungen zu Deiner Abgabe:
+Ich möchte hier klarstellen, dass ich die Lösung nicht komplett alleine erstellt habe (siehe hierzu die Commits auf GitHub). Mitgewirkt haben Alexander Korn und Nico Kranz. 
+
+Wir haben uns für eine Webanwendung entschieden, weil wir so recht einfach die Einkaufsliste überall benutzen könnten und weil wir mal etwas mit Azure, Blazor und .net Core 3.0 machen wollten.
+
+Um den Code in Visual Studio zu nutzen wird die Visual Studio 2019 Preview und .net Core 3.0 preview benötigt.
+
+Ein Admin Account für euch hat folgende Zugangsdaten (braucht ihr um alle Funktionen nutzen zu können):
+Email: XXXXXXXXXXXXXXXXXXXXXXX
+Passwort: XXXXXXXXXXXXXXXXXXXXXXX
+
+Verbesserungsvorschläge:
+Leider ist dies die erste Code Competition für das Jahr 2019. Wir würden uns sehr über mehr Code Competitions freuen (Wie wir auf der Gamescom erfahren haben, gibt es aber für dieses Jahr noch einige :D)

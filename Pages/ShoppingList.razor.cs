@@ -91,13 +91,15 @@ namespace INEZ.Pages
             {
                 string userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+                // create item
                 ShoppingListItem shoppingListItem = new ShoppingListItem()
                 {
                     Name = coreDataItem.Name,
                     Quantity = coreDataItem.Quantity,
                     OwnerId = userId,
                 };
-                await ShoppingListItemsService.CreateItemAsync(shoppingListItem);
+                await ShoppingListItemsService.CreateOrMergeItemAsync(shoppingListItem);
+
                 await LoadShoppingListItems();
             }
         }
