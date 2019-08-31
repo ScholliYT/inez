@@ -11,9 +11,10 @@ namespace INEZ.Classes
         public static readonly Unit Kilograms = new Unit("Kilogramm", "kg", 1);
         public static readonly Unit Milliliters = new Unit("Milliliter", "ml", 0);
         public static readonly Unit Liters = new Unit("Liter", "l", 1);
-        public static readonly Unit Pieces = new Unit("Stück", "Stk.", 0);
+        public static readonly Unit Pieces = new Unit("Stück", "Stück", 0);
 
-        public static readonly List<Unit> List = new List<Unit> { Grams, Kilograms, Milliliters, Liters, Pieces };
+        public static readonly List<Unit> AllUnits = new List<Unit> { Grams, Kilograms, Milliliters, Liters, Pieces };
+
         public string Name { get; private set; }
         public string Abbreviation { get; private set; }
         public int Index { get; private set; }
@@ -27,6 +28,14 @@ namespace INEZ.Classes
 
         public bool Convertable(Unit otherUnit, out double factor)
         {
+            // same unit can always be "converted"
+            if (this == otherUnit)
+            {
+                factor = 1;
+                return true;
+            }
+
+            // allowed conversions
             if (this == Grams)
             {
                 factor = 1000;
@@ -48,18 +57,19 @@ namespace INEZ.Classes
                 return otherUnit == Milliliters;
             }
 
-            factor = default;
+            // cant convert
+            factor = 0;
             return false;
         }
 
         public static Unit GetUnitByAbbreviation(string abbreviation)
         {
-            foreach (Unit unit in List)
-            {
-                if (unit.Abbreviation == abbreviation) return unit;
-            }
+            return AllUnits.FirstOrDefault(u => u.Abbreviation == abbreviation);
+        }
 
-            return null;
+        public static Unit GetUnitByName(string name)
+        {
+            return AllUnits.FirstOrDefault(u => u.Name == name);
         }
     }
 }
