@@ -35,17 +35,6 @@
                         <ValidationMessage For="@(() => Item.Name)" />
                     </div>
                 </div>
-                @if ((EditDataType)Datatype == EditDataType.CoreData)
-                {
-                    <div class="form-group row mb-1">
-                        <label class="col-sm-3 col-form-label" for="Description">Generischer Name:</label>
-
-                        <div class="col-sm-9">
-                            <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).GenericName)" />
-                            <ValidationMessage For="@(() => (((CoreDataItem)Item).GenericName))" />
-                        </div>
-                    </div>
-                }
                 <div class="form-group row mb-1">
                     <label class="col-sm-3 col-form-label" for="Quantity">Menge:</label>
 
@@ -54,17 +43,6 @@
                         <ValidationMessage For="@(() => Item.Quantity)" />
                     </div>
                 </div>
-                @if ((EditDataType)Datatype == EditDataType.CoreData)
-                {
-                    <div class="form-group row mb-1">
-                        <label class="col-sm-3 col-form-label" for="Unit">Marke(n):</label>
-
-                        <div class="col-sm-9">
-                            <InputText Class="form-control" @bind-Value="@(((CoreDataItem)Item).Brands)" />
-                            <ValidationMessage For="@(() => ((CoreDataItem)Item).Brands)" />
-                        </div>
-                    </div>
-                }
 
                 <button type="submit" class="btn btn-primary">@(CreationMode ? "Hinzufügen" : "Ändern")</button>
             </EditForm>
