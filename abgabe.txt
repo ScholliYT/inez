@@ -9,6 +9,9 @@ Ich möchte hier klarstellen, dass ich die Lösung nicht komplett alleine erstel
 
 Wir haben uns für eine Webanwendung entschieden, weil wir so recht einfach die Einkaufsliste überall benutzen könnten und weil wir mal etwas mit Azure, Blazor und .net Core 3.0 machen wollten.
 
+Ein Admin Account für euch hat folgende Zugangsdaten (braucht ihr um alle Funktionen nutzen zu können):
+Email: XXXXXXXXXXXXXXXXXXXXXXX
+Passwort: XXXXXXXXXXXXXXXXXXXXXXX
 
 Verbesserungsvorschläge:
 Leider ist dies die erste Code Competition für das Jahr 2019. Wir würden uns sehr über mehr Code Competitions freuen (Wie wir auf der Gamescom erfahren haben, gibt es aber für dieses Jahr noch einige :D)
