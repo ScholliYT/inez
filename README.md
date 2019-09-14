@@ -3,7 +3,7 @@
 
 Basierend auf der [Aufgabenstellung](https://www.it-talents.de/foerderung/code-competition/edeka-digital-code-competition-08-2019) von IT-Talents ist dies eine Implementierung des Einkaufszettels als Webanwendung.
 
-Die Webanwendung läuft derzeit in der Azure Cloud: https://inez-app.azurewebsites.net/ (Es kann sein, dass die Website lange lädt (10 Sekunden), da Azure das hosting "pausiert" falls die Website nicht genutzt wird. Azure muss das hosting dann erst wieder starten)
+Die Webanwendung läuft derzeit in der Azure Cloud: https://inez-app.azurewebsites.net/ (Es kann sein, dass die Website anfangs lange lädt (10 Sekunden), da Azure das hosting "pausiert" falls die Website nicht genutzt wird. Azure muss das hosting dann erst wieder starten)
 
 
 #### Features
