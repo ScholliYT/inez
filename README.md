@@ -1,5 +1,6 @@
 # INEZ - Der INtelligente EinkaufsZettel
 [![Build Status](https://tom-ein-stein.visualstudio.com/inez/_apis/build/status/inez-app%20-%20CI?branchName=master)](https://tom-ein-stein.visualstudio.com/inez/_build/latest?definitionId=1&branchName=master)
+[![Website](https://img.shields.io/badge/website-azure-blue)](https://inez-app.azurewebsites.net)
 
 Basierend auf der [Aufgabenstellung](https://www.it-talents.de/foerderung/code-competition/edeka-digital-code-competition-08-2019) von IT-Talents ist dies eine Implementierung des Einkaufszettels als Webanwendung.
 
