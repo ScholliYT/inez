@@ -9,13 +9,14 @@ using Blazored.Modal;
 using INEZ.Data.Services;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace INEZ.Pages
 {
     public class ShoppingListModel : ComponentBase
     {
         [Inject] protected IModalService Modal { get; set; }
-        [Inject] protected IUriHelper UriHelper { get; set; }
+        [Inject] protected NavigationManager NavigationManager { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
         [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -72,10 +73,10 @@ namespace INEZ.Pages
 
         protected void AddNewItemManual()
         {
-            UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
+            NavigationManager.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}");
         }
 
-        protected async void UpdateCheckedState(ShoppingListItem item, UIChangeEventArgs args)
+        protected async void UpdateCheckedState(ShoppingListItem item, ChangeEventArgs args)
         {
             item.Checked = (bool)args.Value;
             await ShoppingListItemsService.SaveChangesAsync();
@@ -106,7 +107,7 @@ namespace INEZ.Pages
 
         protected void EditItem(Guid id)
         {
-            UriHelper.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}/{id}");
+            NavigationManager.NavigateTo($"/edititem/{(int)EditItemModel.EditDataType.ShoppingList}/{id}");
         }
 
         protected void ConfirmDelete(ShoppingListItem item)
@@ -129,7 +130,7 @@ namespace INEZ.Pages
             }
         }
 
-        protected async Task<List<CoreDataItem>> GetItem(string searchText)
+        protected async Task<IEnumerable<CoreDataItem>> GetItem(string searchText)
         {
             List<CoreDataItem> items = await Task.FromResult(FuzzyItemMatcher<CoreDataItem>.FilterItems(AvailableItems, searchText, maxcount: 7));
             return items;

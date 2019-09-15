@@ -2,9 +2,6 @@
 @page "/edititem/{Datatype:int}"
 @page "/edititem/{Datatype:int}/{Id:guid}"
 @inherits EditItemModel
-@using INEZ.Data.Entities
-@using System.Security.Claims;
-
 
 <AuthorizeView Context="authorizeview_context">
     <NotAuthorized>

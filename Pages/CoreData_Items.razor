@@ -1,13 +1,8 @@
 @page "/coredata"
-@using INEZ.Data
-@using INEZ.Classes
-@using INEZ.Data.Entities
-@using INEZ.Data.Services
-@using Microsoft.AspNetCore.Components
 
 
 @inject CoreDataItemsService ItemsService
-@inject IUriHelper UriHelper
+@inject NavigationManager UriHelper
 <h3>Stammdaten </h3>
 
 @if (_items == null)
@@ -61,7 +56,7 @@ else
 
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-light" @onclick=@(() => EditItem(item.Id))><span class="oi oi-pencil" /></button>
-                                                <button type="button" class="btn btn-danger" @onclick=@(() => ConfirmDelete(item))><span class="oi oi-trash" /></button>
+                                                <button type="button" class="btn btn-danger" @onclick=@(() =>ConfirmDelete(item))><span class="oi oi-trash" /></button>
                                             </div>
 
                                         </td>

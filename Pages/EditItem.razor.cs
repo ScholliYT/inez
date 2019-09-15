@@ -5,6 +5,7 @@ using INEZ.Data;
 using INEZ.Data.Entities;
 using INEZ.Data.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
@@ -18,7 +19,7 @@ namespace INEZ.Pages
             ShoppingList
         }
 
-        [Inject] protected IUriHelper UriHelper { get; set; }
+        [Inject] protected NavigationManager NavigationManager { get; set; }
         [Inject] protected CoreDataItemsService CoreDataItemsService { get; set; }
         [Inject] protected ShoppingListItemsService ShoppingListItemsService { get; set; }
         [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -75,7 +76,7 @@ namespace INEZ.Pages
                         await CoreDataItemsService.CreateItemAsync((CoreDataItem)Item);
                     else
                         await CoreDataItemsService.SaveChangesAsync();
-                    UriHelper.NavigateTo("/coredata");
+                    NavigationManager.NavigateTo("/coredata");
                     break;
                 case EditDataType.ShoppingList:
                     if (CreationMode)
@@ -86,7 +87,7 @@ namespace INEZ.Pages
                     }
                     else
                         await ShoppingListItemsService.SaveChangesAsync();
-                    UriHelper.NavigateTo("/shoppinglist");
+                    NavigationManager.NavigateTo("/shoppinglist");
                     break;
                 default:
                     break;
