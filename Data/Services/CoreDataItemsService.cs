@@ -33,7 +33,7 @@ namespace INEZ.Data.Services
         {
             var items = await GetItemsAsync();
 
-            return FuzzyItemMatcher<CoreDataItem>.FilterItems(items, searchterm);
+            return FuzzyItemMatcher<CoreDataItem>.FilterItems(items, searchterm).Select(r => r.Item);
         }
 
         public async Task<CoreDataItem> CreateItemAsync(CoreDataItem item)

@@ -24,6 +24,17 @@ namespace INEZ.Pages
         public List<ShoppingListItem> ShoppingListItems { get; set; }
         protected List<CoreDataItem> AvailableItems { get; set; } = new List<CoreDataItem>();
 
+        private ItemSearchResult<CoreDataItem> _selectedResult;
+        protected ItemSearchResult<CoreDataItem> SelectedResult
+        {
+            get => _selectedResult;
+            set
+            {
+                _selectedResult = value;
+                SelectedItem = _selectedResult?.Item ?? null;
+            }
+        }
+
         private CoreDataItem _selectedItem;
         protected CoreDataItem SelectedItem
         {
@@ -34,7 +45,6 @@ namespace INEZ.Pages
                 if (_selectedItem != null)
                 {
                     AddCoreDataItemAsync(SelectedItem).ConfigureAwait(false);
-                    // TODO: clear SelectedItem
                 }
             }
         }
@@ -130,9 +140,9 @@ namespace INEZ.Pages
             }
         }
 
-        protected async Task<IEnumerable<CoreDataItem>> GetItem(string searchText)
+        protected async Task<IEnumerable<ItemSearchResult<CoreDataItem>>> GetItem(string searchText)
         {
-            List<CoreDataItem> items = await Task.FromResult(FuzzyItemMatcher<CoreDataItem>.FilterItems(AvailableItems, searchText, maxcount: 7));
+            var items = await Task.FromResult(FuzzyItemMatcher<CoreDataItem>.FilterItems(AvailableItems, searchText, maxcount: 7));
             return items;
         }
     }

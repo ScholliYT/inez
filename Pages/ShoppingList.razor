@@ -19,15 +19,16 @@
                     <div class="col ">
                         <div class="input-group mb-auto">
                             <BlazoredTypeahead SearchMethod="@GetItem"
-                                               @bind-Value="@SelectedItem"
+                                               @bind-Value="@SelectedResult"
                                                Debounce="200"
                                                Placeholder="Stammdaten durchsuchen...">
-                                <SelectedTemplate Context="item">
-                                    @item.Quantity    @item.Name
+                                <SelectedTemplate Context="result">
+                                    @result.Item.Quantity    @result.Item.Name
                                 </SelectedTemplate>
-                                <ResultTemplate Context="item">
-                                    <img src="@item.ImageSmallUrl" height="50">
-                                    @item.Quantity    @item.Name
+                                <ResultTemplate Context="result">
+                                    <img src="@result.Item.ImageSmallUrl" height="50">
+                                    @result.Item.Quantity    @result.Item.Name<br />
+                                    Score: @result.Score
                                 </ResultTemplate>
                                 <NotFoundTemplate>
                                     Keine Treffer!
